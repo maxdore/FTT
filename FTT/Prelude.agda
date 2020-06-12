@@ -40,3 +40,5 @@ _◾_ : ∀{ℓ}{A : Set ℓ}{x y z : A} → x ≡ y → y ≡ z → x ≡ z
 refl ◾ refl = refl
 
 infixl 4 _◾_
+
+{-# BUILTIN REWRITE _≡_ #-}

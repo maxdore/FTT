@@ -34,36 +34,46 @@ gt {Γ} {n} (fsucᶠ x) (fsucᶠ y) = gt x y
 gt {Γ} {n} _ _ = ⊥ᶠ -- can't happen, but we have to split on other data constructors
 
 
+-- lift : ∀{Γ i j} {A : Ty Γ i} {B : Ty (Γ , A) j} {t : Tm Γ A}
+postulate
+  lift : ∀{Γ} {t : Tm Γ ℕᶠ}
+    → subT (Finᶠ (subt t (π₁ (id {Γ , Finᶠ t})))) (π₁ (id {Γ , Finᶠ t , Finᶠ (◁ t)})) ≡ subT (Finᶠ t) (π₁ id ∘ π₁ id)
+    -- → subT (Finᶠ (◁ t)) wk ≡ subT (Finᶠ t) (π₁ id ∘ π₁ id)
 
 
 is-increasing : ∀{Γ} {m n : Tm Γ ℕᶠ} → (Tm Γ (Πᶠc 0 (Finᶠ m) (Finᶠ n))) → Ty Γ 0
--- is-increasing {m} {n} f = {!!}
 is-increasing {Γ} {m} {n} f = Πᶠ 0 (Finᶠ m)
                              (Πᶠ 0 (Finᶠ (◁ m))
                                     (Πᶠc 0 (gt (◁ ▼) ▼)
-                                           (gt ((◁ (◁ f)) $ ◁ ▼) ((◁ (◁ f)) $ {!!}))))
+                                           (gt ((◁ (◁ f)) $ ◁ ▼) ((◁ (◁ f)) $ (coe (TmΓ≡ lift) ▼)))))
 
 
 
-is-increasing' : ∀{Γ} → {m n : Tm Γ ℕᶠ} → (Tm (Γ , ℕᶠ , ℕᶠ) (Πᶠc 0 (Finᶠ (◁ ▼)) (Finᶠ ▼))) → Ty Γ 0
-is-increasing' {Γ} {m} {n} f = Πᶠ 0 (Finᶠ m)
-                              (Πᶠ 0 (Finᶠ (◁ m))
-                                (Πᶠc 0 (gt (◁ ▼) ▼)
-                                       (gt ((◁ (◁ (subt f (subExt (subExt id m) n)))) $ ? ) -- ◁ ▼)
-                                           ((◁ (◁ (subt f (subExt (subExt id m) n)))) $ {!!})
-                                       )))
+-- is-increasing' : ∀{Γ} → {m n : Tm Γ ℕᶠ} → (Tm (Γ , ℕᶠ , ℕᶠ) (Πᶠc 0 (Finᶠ (◁ ▼)) (Finᶠ ▼))) → Ty Γ 0
+-- is-increasing' {Γ} {m} {n} f = Πᶠ 0 (Finᶠ m)
+--                               (Πᶠ 0 (Finᶠ (◁ m))
+--                                 (Πᶠc 0 (gt (◁ ▼) ▼)
+--                                        (gt ((◁ (◁ (subt f (subExt (subExt id m) n)))) $ {!!}) -- ◁ ▼)
+--                                            ({!!} $ ▼) -- ▼)
+--                                        )))
 
 
 
 -- hom-sets of Δ₊
 _⇒+_ : ∀ {Γ} → Tm Γ ℕᶠ → Tm Γ ℕᶠ → Ty Γ 1
--- _⇒+_ {Γ} m n = Σᶠ 1 (Πᶠc 0 (Finᶠ m) (Finᶠ n)) (is-increasing {Γ , Πᶠc 0 (Finᶠ m) (Finᶠ n)} {◁ m} {◁ n} ▼)
-_⇒+_ {Γ} m n = Σᶠ 1 (Πᶠc 0 (Finᶠ m) (Finᶠ n)) (is-increasing' {{!!}} {{!!}} {{!!}} ({!!} (◁ ▼)))
+_⇒+_ {Γ} m n = Σᶠ 1 (Πᶠc 0 (Finᶠ m) (Finᶠ n)) (is-increasing {Γ , Πᶠc 0 (Finᶠ m) (Finᶠ n)} {◁ m} {◁ n} ▼)
+-- _⇒+_ {Γ} m n = Σᶠ 1 (Πᶠc 0 (Finᶠ m) (Finᶠ n)) (is-increasing' {{!!}} {{!!}} {{!!}} ({!!} (◁ ▼)))
 
 
 -- composition:
-_∘+_ : {l : Tm ⟨⟩ ℕᶠ} → {m : Tm ⟨⟩ ℕᶠ} → {n : Tm ⟨⟩ ℕᶠ} → (Tm ⟨⟩ (m ⇒+ n)) → (Tm ⟨⟩ (l ⇒+ m)) → (Tm ⟨⟩ (l ⇒+ n))
-g ∘+ f = {!!}
+_∘+_ : ∀{Γ} → Tm (Γ , ℕᶠ , ℕᶠ , ℕᶠ , (◁ (▼) ⇒+ ▼) , (◁ (◁ (◁ ▼)) ⇒+ ◁ (◁ ▼))) (◁ (◁ (◁ (◁ ▼))) ⇒+ ◁ (◁ ▼))
+_∘+_ {Γ} = {!!}
+
+
+-- _∘+_ : ∀{Γ} {p q r : Tm Γ ℕᶠ} → (Tm Γ (q ⇒+ r)) → (Tm Γ (p ⇒+ q)) → (Tm Γ (p ⇒+ r))
+-- _∘+_ {Γ} {p} {q} {r} (pair g i) (pair f j) = pair (λᶠ ((coe ? (◁ g)) $ ((◁ f) $ ▼))) (λᶠ ((◁ i) $ ((coe ? (◁ j)) $ ▼)))
+-- _∘+_ {Γ} {p} {q} {r} (pair g i) (pair f j) = pair (λᶠ ((◁ ?) $ ((◁ f) $ ▼))) (λᶠ ((◁ i) $ ((◁ ?) $ ▼)))
+-- _∘+_ {Γ} {p} {q} {r} _ _ = {!!}
 -- (g , p₂) ∘+ (f , p₁) = (λ i → g(f(i))) , (λ p → p₂ (p₁ p))
 
 -- Semi-simplicial type of dimension n

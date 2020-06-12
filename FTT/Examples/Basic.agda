@@ -32,14 +32,8 @@ open import FTT.Base
 ⊤tt : Tm ⟨⟩ ℕᶠ
 ⊤tt = ⊤test $ ttᶠ
 
-A⁰test : ∀{Γ} → Tm Γ (Πᶠ 0 ⊤ᶠ ℕᶠ)
-A⁰test = λᶠ (A⁰-ind ℕᶠ (sucᶠ zeroᶠ) vz)
 
-idf : ∀{Γ} → Tm Γ (Πᶠ 0 ℕᶠ ℕᶠ)
-idf = λᶠ vz
 
-A⁰test2 : ∀{Γ} → Tm Γ (Πᶠ 0 (Πᶠ 0 ℕᶠ ℕᶠ) (Πᶠ 0 ℕᶠ ℕᶠ))
-A⁰test2 = λᶠ (A⁰-ind (Πᶠ 0 ℕᶠ ℕᶠ) vz vz)
 
 
 
