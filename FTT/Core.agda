@@ -10,7 +10,6 @@ x ≡[ α ]≡ y = coe α x ≡ y
 
 infix 4 _≡[_]≡_
 
-
 data Cxt : Set
 data Ty : Cxt → ℕ → Set
 data Tms : Cxt → Cxt → Set
@@ -106,24 +105,13 @@ data Tm where
     ---------------------------------------------------------
     → Tm Γ (Σᶠ l A B)
 
+
   ttᶠ : {Γ : Cxt} → Tm Γ ⊤ᶠ
   zeroᶠ : {Γ : Cxt} → Tm Γ ℕᶠ
   sucᶠ : {Γ : Cxt} → Tm Γ ℕᶠ → Tm Γ ℕᶠ
   fzeroᶠ : {Γ : Cxt} → {n : Tm Γ ℕᶠ} → Tm Γ (Finᶠ (sucᶠ n))
   fsucᶠ : {Γ : Cxt} {n : Tm Γ ℕᶠ} → Tm Γ (Finᶠ n) → Tm Γ (Finᶠ (sucᶠ n))
   reflᶠ : {Γ : Cxt} {n : ℕ} → {A : Ty Γ n} → {a : Tm Γ A} → Tm Γ (Idᶠ A a a)
-  -- reflᶠ    : ∀{Γ n} {A : Ty Γ n} → Tm (Γ , A , subT A wk) (Idᶠ (vsT (vsT A)) (vs vz) vz)
-
-  -- Σ-ind : ∀{Γ l m n} {A : Ty Γ m} {B : Ty (Γ , A) n} → Tm Γ (Σᶠ l A B) → Tm (Γ , A) B
-
-  -- Σ-ind : ∀{Γ l m n}
-  --     {A : Ty Γ m}
-  --     {B : Ty (Γ , A) n}
-  --   → (a : Tm Γ A)
-  --   → Tm Γ (Σᶠ l A B)
-  --   ---------------------------------------------------------
-  --   → Tm Γ (subT B (subExt id a))
-
 
   ⊤-ind : ∀ {Γ n} (C : Ty (Γ , ⊤ᶠ) n) (c : Tm Γ (subT C (subExt id ttᶠ))) (a : Tm Γ ⊤ᶠ) → Tm Γ (subT C (subExt id a))
 
@@ -135,22 +123,6 @@ data Tm where
     ---------------------------------------------------------
     → Tm Γ (subT C (subExt id n))
 
-  -- with intro rule
-  -- • : ∀ {Γ}
-  --   {A : Ty Γ 0}
-  --   -- {a : Tm Γ A}
-  --   ---------------------------------------------------------
-  --   → Tm (Γ , A) (subT A wk)
-
-  -- •-ind : ∀ {Γ n}
-  --   {A : Ty Γ 0}
-  --   → (C : Ty (Γ , A) n)
-  --   → (c : Tm (Γ , A) (subT C (subExt wk •)))
-  --   → (a : Tm Γ A)
-  --   ---------------------------------------------------------
-  --   → Tm Γ (subT C (subExt id a))
-
-  -- without intro rule
   •-ind : ∀ {Γ n}
       {A : Ty Γ 0}
     → (C : Ty (Γ , A) n)

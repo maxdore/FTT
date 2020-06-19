@@ -20,25 +20,69 @@ id↑ = refl
 π₁=' δ₂ = π₁= refl refl refl δ₂
 
 
+-- π₁∘ : ∀{Γ Δ Θ n}{A : Ty Δ n}{δ : Tms Γ (Δ , A)}{ρ : Tms Θ Γ}
+--   → π₁ δ ∘ ρ ≡ π₁ (δ ∘ ρ)
+-- π₁∘ {Γ}{Δ}{Θ}{n}{A}{δ}{ρ} = (π₁β {Θ} {Δ} {n} {A} {π₁ δ ∘ ρ} {_}) ⁻¹
+--                         ◾ π₁=' (,∘ ⁻¹)
+--                         ◾ π₁=' (cong (λ x → x ∘ ρ) πη)
+
+-- π₁id∘ : ∀{Γ Δ n}{A : Ty Δ n}{ρ : Tms Γ (Δ , A)}
+--   → π₁ id ∘ ρ ≡ π₁ ρ
+-- π₁id∘ = π₁∘ ◾ π₁=' idl
+
+postulate
+  wk∘<> : ∀{Γ i}{A : Ty Γ i}{u : Tm Γ A} → (π₁ id) ∘ (subExt id u) ≡ id
+-- wk∘<> = π₁id∘ ◾ π₁β
+
+  natHack : {Γ : Cxt} {n : Tm Γ ℕᶠ} → subExt id (sucᶠ n) ≡ (subExt (π₁ id) (sucᶠ (π₂ id)) ∘ subExt id n)
+
+{-# REWRITE wk∘<> #-}
+{-# REWRITE natHack #-}
+
+postulate
+  Σhack : ∀ {Γ n l i j}
+    {A : Ty Γ i}
+    {B : Ty (Γ , A) j}
+    {C : Ty (Γ , Σᶠ l A B) n}
+    ---------------------------------------------------------
+    -- → π₁ (id {Γ , A , B}) ≡ (((π₁ (id {Γ , A})) ∘ (π₁ (id {Γ , A , B}))) ↑ A) ∘ subExt id (vs vz)
+    -- → π₁ id ≡ subExt ((π₁ id ∘ (π₁ id ∘ π₁ id)) ∘ subExt id (vs vz))
+    → subT B (π₁ (id {Γ , A , B})) ≡ subT (subT B ((wk ∘ wk) ↑ A)) (subExt id (vs vz))
+
+
+
+{-# REWRITE Σhack #-}
+
+-- Σhack2 : ∀{Γ i j}
+--   {A : Ty Γ i}
+--   {B : Ty (Γ , A) j}
+--   {a : Tm Γ A}
+--   {b : Tm Γ (subT B (subExt id a))}
+--   ---------------------------------------------------------
+--   → subExt id (pair a b) ≡ (subExt (wk ∘ wk) (pair (◁ ▼) ▼) ∘ subExt (subExt id a) b)
+
+
 
 -- From TT/Core/Laws
 
-postulate
-  π₁∘ : ∀{Γ Δ Σ n}{A : Ty Δ n}{δ : Tms Γ (Δ , A)}{ρ : Tms Σ Γ}
-    → π₁ δ ∘ ρ ≡ π₁ (δ ∘ ρ)
--- π₁∘ {Γ}{Δ}{Σ}{A}{δ}{ρ} = π₁β ⁻¹ ◾ π₁=' (,∘ ⁻¹) ◾ π₁=' refl -- (cong (λ z → (z ∘ ρ)) πη)
+-- see also TT/Core/Laws/JM
 
-  π₁idβ : ∀{Γ Δ i}{ρ : Tms Γ Δ}{A : Ty Δ i}{t : Tm Γ (subT A ρ)}
-    → π₁ (id {Δ , A}) ∘ (subExt ρ t) ≡ ρ
--- π₁idβ = π₁∘ ◾ π₁=' idl ◾ π₁β
+-- postulate
+--   π₁∘ : ∀{Γ Δ Σ n}{A : Ty Δ n}{δ : Tms Γ (Δ , A)}{ρ : Tms Σ Γ}
+--     → π₁ δ ∘ ρ ≡ π₁ (δ ∘ ρ)
+-- -- π₁∘ {Γ}{Δ}{Σ}{A}{δ}{ρ} = π₁β ⁻¹ ◾ π₁=' (,∘ ⁻¹) ◾ π₁=' refl -- (cong (λ z → (z ∘ ρ)) πη)
 
-  ∘π₁id : ∀{Γ Δ i}{ρ : Tms Γ Δ}{A : Ty Δ i}
-    → ρ ∘ π₁ {A = subT A ρ} id ≡ π₁ id ∘ (ρ ↑ A)
-  -- ∘π₁id {Γ}{Δ}{ρ}{A} = π₁β ⁻¹ ◾ ap π₁ idl ⁻¹ ◾ π₁∘ ⁻¹
+--   π₁idβ : ∀{Γ Δ i}{ρ : Tms Γ Δ}{A : Ty Δ i}{t : Tm Γ (subT A ρ)}
+--     → π₁ (id {Δ , A}) ∘ (subExt ρ t) ≡ ρ
+-- -- π₁idβ = π₁∘ ◾ π₁=' idl ◾ π₁β
 
-  π₁id∘ : ∀{Γ Δ i}{A : Ty Δ i}{ρ : Tms Γ (Δ , A)}
-    → π₁ id ∘ ρ ≡ π₁ ρ
-  -- π₁id∘ = π₁∘ ◾ π₁=' idl
+--   ∘π₁id : ∀{Γ Δ i}{ρ : Tms Γ Δ}{A : Ty Δ i}
+--     → ρ ∘ π₁ {A = subT A ρ} id ≡ π₁ id ∘ (ρ ↑ A)
+--   -- ∘π₁id {Γ}{Δ}{ρ}{A} = π₁β ⁻¹ ◾ ap π₁ idl ⁻¹ ◾ π₁∘ ⁻¹
+
+--   π₁id∘ : ∀{Γ Δ i}{A : Ty Δ i}{ρ : Tms Γ (Δ , A)}
+--     → π₁ id ∘ ρ ≡ π₁ ρ
+--   -- π₁id∘ = π₁∘ ◾ π₁=' idl
 
 -- {-# REWRITE π₁∘ #-}
 -- {-# REWRITE π₁idβ #-}
@@ -47,45 +91,44 @@ postulate
 
 
 
-postulate
-  wk∘<> : ∀{Γ i}{A : Ty Γ i}{u : Tm Γ A} → (π₁ id) ∘ (subExt id u) ≡ id
-  -- wk∘<> = π₁id∘ ◾ π₁β
+-- postulate
+--   -- wk∘<> : ∀{Γ i}{A : Ty Γ i}{u : Tm Γ A} → (π₁ id) ∘ (subExt id u) ≡ id
+--   -- wk∘<> = π₁id∘ ◾ π₁β
 
-  [wk][id,] : ∀{Γ i j}{A : Ty Γ i}{B : Ty Γ j}{u : Tm Γ (subT B id)}
-    → A ≡ subT (subT A wk) (subExt id u)
-  -- [wk][id,] {Γ}{A}{B}{u} = [id]T ⁻¹ ◾ ap (_[_]T A) ( π₁β ⁻¹ ◾ π₁id∘ ⁻¹) ◾ [][]T ⁻¹
+--   [wk][id,] : ∀{Γ i j}{A : Ty Γ i}{B : Ty Γ j}{u : Tm Γ (subT B id)}
+--     → A ≡ subT (subT A wk) (subExt id u)
+--   -- [wk][id,] {Γ}{A}{B}{u} = [id]T ⁻¹ ◾ ap (_[_]T A) ( π₁β ⁻¹ ◾ π₁id∘ ⁻¹) ◾ [][]T ⁻¹
 
-  [wk][,] : ∀{Γ Δ i j}{σ : Tms Γ Δ}{A : Ty Δ i}{B : Ty Δ j}{u : Tm Γ (subT B σ)}
-    → subT (subT A (π₁ (id {Δ , B}))) (subExt σ u) ≡ subT A σ
-  -- [wk][,] {Γ}{Δ}{σ}{A}{B}{u} = [][]T ◾ A[]T= (π₁id∘ ◾ π₁β)
+--   [wk][,] : ∀{Γ Δ i j}{σ : Tms Γ Δ}{A : Ty Δ i}{B : Ty Δ j}{u : Tm Γ (subT B σ)}
+--     → subT (subT A (π₁ (id {Δ , B}))) (subExt σ u) ≡ subT A σ
+--   -- [wk][,] {Γ}{Δ}{σ}{A}{B}{u} = [][]T ◾ A[]T= (π₁id∘ ◾ π₁β)
 
-  [wk][wk][id,,] : ∀ {Γ i j k}{A : Ty Γ i}{B : Ty Γ j}{C : Ty (Γ , B) k}
-    {u : Tm Γ (subT B id)}{v : Tm Γ (subT C (subExt id u))}
-    → A ≡ subT (subT (subT A (π₁ (id {Γ , B}))) (π₁ (id {Γ , B , C}))) (subExt (subExt id u) v)
-  -- [wk][wk][id,,] {Γ}{A}{B}{C}{u}{v}
-  -- = [id]T ⁻¹
-  -- ◾ ap
-  -- (_[_]T A)
-  -- ( π₁β ⁻¹
-  -- ◾ ap π₁ (π₁β ⁻¹ ◾ π₁id∘ ⁻¹)
-  -- ◾ π₁id∘ ⁻¹)
-  -- ◾ [][]T ⁻¹
-  -- ◾ [][]T ⁻¹
+--   [wk][wk][id,,] : ∀ {Γ i j k}{A : Ty Γ i}{B : Ty Γ j}{C : Ty (Γ , B) k}
+--     {u : Tm Γ (subT B id)}{v : Tm Γ (subT C (subExt id u))}
+--     → A ≡ subT (subT (subT A (π₁ (id {Γ , B}))) (π₁ (id {Γ , B , C}))) (subExt (subExt id u) v)
+--   -- [wk][wk][id,,] {Γ}{A}{B}{C}{u}{v}
+--   -- = [id]T ⁻¹
+--   -- ◾ ap
+--   -- (_[_]T A)
+--   -- ( π₁β ⁻¹
+--   -- ◾ ap π₁ (π₁β ⁻¹ ◾ π₁id∘ ⁻¹)
+--   -- ◾ π₁id∘ ⁻¹)
+--   -- ◾ [][]T ⁻¹
+--   -- ◾ [][]T ⁻¹
 
-  [wk][^]T : ∀{Γ Θ i j}{A : Ty Γ i}{σ : Tms Θ Γ}{B : Ty Γ j}
-    → subT (subT B wk) (σ ↑ A) ≡ subT (subT B σ) wk
-  -- [wk][^]T = [][]T ◾ []T=' refl refl π₁idβ ◾ [][]T ⁻¹
+--   [wk][^]T : ∀{Γ Θ i j}{A : Ty Γ i}{σ : Tms Θ Γ}{B : Ty Γ j}
+--     → subT (subT B wk) (σ ↑ A) ≡ subT (subT B σ) wk
+--   -- [wk][^]T = [][]T ◾ []T=' refl refl π₁idβ ◾ [][]T ⁻¹
 
-  []T∘ : ∀{Γ Δ Θ i}{ν : Tms Γ Δ}{σ : Tms Δ Θ}{A : Ty Δ i}{B : Ty Θ i} (p : A ≡ subT B σ)
-    → subT A ν ≡ subT B (σ ∘ ν)
-  -- []T∘ p = [σ]T= p ◾ [][]T
+--   []T∘ : ∀{Γ Δ Θ i}{ν : Tms Γ Δ}{σ : Tms Δ Θ}{A : Ty Δ i}{B : Ty Θ i} (p : A ≡ subT B σ)
+--     → subT A ν ≡ subT B (σ ∘ ν)
+--   -- []T∘ p = [σ]T= p ◾ [][]T
 
-  [][]T∘ : ∀{Γ Δ Δ' Θ i}{σ : Tms Γ Δ}{ν : Tms Δ Θ}{σ' : Tms Γ Δ'}{ν' : Tms Δ' Θ}
-    → ν ∘ σ ≡ ν' ∘ σ' → {A : Ty Θ i}
-    → subT (subT A ν) σ ≡ subT (subT A ν') σ'
-  -- [][]T∘ p = [][]T ◾ (A[]T= p ◾ [][]T ⁻¹)
+--   [][]T∘ : ∀{Γ Δ Δ' Θ i}{σ : Tms Γ Δ}{ν : Tms Δ Θ}{σ' : Tms Γ Δ'}{ν' : Tms Δ' Θ}
+--     → ν ∘ σ ≡ ν' ∘ σ' → {A : Ty Θ i}
+--     → subT (subT A ν) σ ≡ subT (subT A ν') σ'
+--   -- [][]T∘ p = [][]T ◾ (A[]T= p ◾ [][]T ⁻¹)
 
-{-# REWRITE wk∘<> #-}
 -- {-# REWRITE [wk][,] #-}
 -- {-# REWRITE [wk][^]T #-}
 
@@ -98,50 +141,41 @@ postulate
 
 -- Own Lemmas
 
-postulate
   -- error message: π₁ (π₁ id) != subExt (π₁ (π₁ id) ∘ π₁ id) (π₂ id)
   -- pis : ∀{Γ i j}{A : Ty Γ i}{B : Ty (Γ , A) j}
   --   → π₁ (π₁ (id {Γ , A , B , ◀ (◀ A)})) ≡ subExt (π₁ (π₁ (id {Γ , A , B})) ∘ π₁ (id {Γ , A , B , ◀ (◀ A)})) (π₂ (id {Γ , A , B , ◀ (◀ A)}))
 
   -- error message: (π₁ id ∘ subExt id n) != id
-  natHack : {Γ : Cxt} {n : Tm Γ ℕᶠ} → subExt id (sucᶠ n) ≡ (subExt (π₁ id) (sucᶠ (π₂ id)) ∘ subExt id n)
 
   -- error message: δ != δ ∘ (π₁ id ∘ subExt id ttᶠ)
   -- subsumed by wk∘<>
   -- ⊤hack : ∀ {Γ Δ} {δ : Γ ⇒ Δ} → subExt id ttᶠ ≡ (subExt (π₁ id) (π₂ id) ∘ subExt δ ttᶠ)
   -- ⊤hack : ∀ {Γ} → π₁ (id {Γ , ⊤ᶠ}) ∘ subExt (id {Γ}) ttᶠ ≡ id
 
-  ⊤hack : ∀{Γ Δ n} {δ : Γ ⇒ Δ} {C : Ty (Δ , ⊤ᶠ) n} {a : Tm Δ ⊤ᶠ}
-    → (subT (subT C (δ ↑ ⊤ᶠ)) (subExt id (subt a δ))) ≡ subT (subT C (subExt id a)) δ
+  -- ⊤hack : ∀{Γ Δ n} {δ : Γ ⇒ Δ} {C : Ty (Δ , ⊤ᶠ) n} {a : Tm Δ ⊤ᶠ}
+  --   → (subT (subT C (δ ↑ ⊤ᶠ)) (subExt id (subt a δ))) ≡ subT (subT C (subExt id a)) δ
        -- subT (subT C (δ ↑ ⊤ᶠ)) (subExt id (subt a δ)) ≡ subT (subT C (subExt id a)) δ 
 -- ⊤hack {Γ} {Δ} {n} {δ} {C} {a} = refl ◾ ({!refl!} ◾ refl)
 
 -- {-# REWRITE pis #-}
-{-# REWRITE natHack #-}
 -- {-# REWRITE ⊤hack #-}
 
 
-postulate
-  Σhack : ∀ {Γ n l i j}
-    {A : Ty Γ i}
-    {B : Ty (Γ , A) j}
-    {C : Ty (Γ , Σᶠ l A B) n}
-    ---------------------------------------------------------
-    -- → π₁ (id {Γ , A , B}) ≡ (((π₁ (id {Γ , A})) ∘ (π₁ (id {Γ , A , B}))) ↑ A) ∘ subExt id (vs vz)
-    -- → π₁ id ≡ subExt ((π₁ id ∘ (π₁ id ∘ π₁ id)) ∘ subExt id (vs vz))
-    → subT B (π₁ (id {Γ , A , B})) ≡ subT (subT B ((wk ∘ wk) ↑ A)) (subExt id (vs vz))
 
-  -- Σhack2 : ∀{Γ i j}
-  --   {A : Ty Γ i}
-  --   {B : Ty (Γ , A) j}
-  --   {a : Tm Γ A}
-  --   {b : Tm Γ (subT B (subExt id a))}
-  --   ---------------------------------------------------------
-  --   → subExt id (pair a b) ≡ (subExt (wk ∘ wk) (pair (◁ ▼) ▼) ∘ subExt (subExt id a) b)
+-- postulate
+--   Σβhack : ∀{Γ l i j n}
+--     {A : Ty Γ i}
+--     {B : Ty (Γ , A) j}
+--     {C : Ty (Γ , (Σᶠ l A B)) n}
+--     {g : Tm (Γ , A , subT B (subExt wk vz)) (subT C (subExt (wk ∘ wk) (pair (◁ ▼) ▼)))}
+--     {a : Tm Γ A}
+--     {b : Tm Γ (subT B (subExt id a))}
+--     ---------------------------------------------------------
+--     -- → (π₁ id ∘ (π₁ (id {Γ , A , B}) ∘ subExt (subExt id a) b)) ≡ id
+--     → subT C (subExt id (pair a b))
+--        ≡ subT (subT C (subExt (wk ∘ (π₁ (id {Γ , A , B}))) (pair (◁ ▼) ▼))) (subExt (subExt id a) b)
 
-{-# REWRITE Σhack #-}
-
-
+-- {-# REWRITE Σβhack #-}
 
 
 -- from TT/Core

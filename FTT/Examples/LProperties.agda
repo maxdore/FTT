@@ -34,18 +34,19 @@ postulate
 
 
 -- External version
--- UIP : ∀{Γ} → (A : Ty Γ 1) → (a b : Tm Γ A) → (p q : Tm Γ (Idᶠ A a b)) → (Tm Γ (Idᶠ (Idᶠ A a b) p q))
--- UIP {Γ} A a b p q = •-ind {Γ} {0} {(Idᶠ A a b)}
---                         (Idᶠ (Idᶠ {!!} {!!} {!!}) {!!} (coe (TmΓ≡ {!UIPhack!}) ▼))
---                         -- (Idᶠ (Idᶠ (◀ A) (◁ a) (◁ b)) (coe (TmΓ≡ UIPhack) ▼))
---                         p
---                         (reflᶠ {A = Idᶠ A a b} {a = p})
---                         q
+UIP : ∀{Γ} → (A : Ty Γ 1) → (a b : Tm Γ A) → (p q : Tm Γ (Idᶠ A a b)) → (Tm Γ (Idᶠ (Idᶠ A a b) p q))
+UIP {Γ} A a b p q = •-ind {Γ} {0} {(Idᶠ A a b)}
+                        (Idᶠ (Idᶠ (◀ A) (◁ a) (◁ b)) (coe ? (◁ p)) (coe (TmΓ≡ ?) ▼))
+                        -- (Idᶠ (Idᶠ (◀ A) {!!} {!!}) {!!} (coe (TmΓ≡ {!UIPhack!}) ▼))
+                        p
+                        -- (reflᶠ {A = Idᶠ A a b} {a = p})
+                        q
 
 
 -- Internal version
--- UIP : ∀{Γ} → (A : Ty Γ 1) → (Tm (Γ , A , ◀ A ,
+-- UIP' : ∀{Γ} → (A : Ty Γ 1) → (Tm (Γ , A , ◀ A ,
 --                    (Idᶠ (◀ (◀ A)) (◁ ▼) ▼),
 --                    (Idᶠ (◀ (◀ (◀ A))) (◁ (◁ ▼)) (◁ ▼)))
 --                    (Idᶠ (Idᶠ (◀ (◀ (◀ (◀ A)))) (◁ (◁ (◁ ▼))) (◁ (◁ ▼))) (◁ ▼) ▼))
--- UIP = {!!}
+UIP = {!!}
+-- UIP' = {!!}

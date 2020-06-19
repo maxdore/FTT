@@ -6,18 +6,46 @@ open import FTT.Prelude
 open import FTT.Core
 open import FTT.Lemmas
 
+postulate
+  subtvzwk : ∀{Γ i}{A : Ty Γ i}{u : Tm Γ A} → (subt vz (id {Γ , A , subT A wk})) ≡ (π₂ id)
+  wkwksubExtExt :  ∀{Γ i}{A : Ty Γ i} {A : Ty Γ i} {a b : Tm Γ A}
+    → A ≡ (subT A ((π₁ id ∘ π₁ (id {Γ , A , (subT A wk)})) ∘ subExt (subExt id a) b))
+
+
+{-# REWRITE subtvzwk #-}
+
+
 
 -- Elimination principles
 postulate
 
-  Σ-ind : ∀ {Γ n l i j}
-    → {A : Ty Γ i}
-    → {B : Ty (Γ , A) j}
-    → (C : Ty (Γ , Σᶠ l A B) n)
-    → (g : Tm (Γ , A , B) (subT C (subExt (wk ∘ wk) (pair (◁ ▼) ▼))))
+  split : ∀{Γ l i j n}
+      {A : Ty Γ i}
+      {B : Ty (Γ , A) j}
+    → (C : Ty (Γ , (Σᶠ l A B)) n)
+    → (g : Tm (Γ , A , subT B (subExt wk vz)) (subT C (subExt (wk ∘ wk) (pair (◁ ▼) ▼))))
     → (p : Tm Γ (Σᶠ l A B))
     ---------------------------------------------------------
     → Tm Γ (subT C (subExt id p))
+
+  -- Id-ind : ∀ {Γ n}
+  --   → (A : Ty Γ n)
+  --   → (C : Ty (Γ , A , subT A wk , Idᶠ (vsT (vsT A)) (vs vz) vz) n)
+  --   → (c : Tm (Γ , A) (subT C (subExt (subExt (subExt wk vz) vz) {!!})))
+  --   → (a b : Tm Γ A)
+  --   → (p : Tm Γ (Idᶠ A a b))
+  --   ---------------------------------------------------------
+  --   → Tm Γ (subT C (subExt (subExt (subExt id a) b) (coe (TmΓ≡ (cong (Idᶠ {!!} {!!}) {!!})) p)))
+
+
+  -- Σ-ind : ∀ {Γ n l i j}
+  --   → {A : Ty Γ i}
+  --   → {B : Ty (Γ , A) j}
+  --   → (C : Ty (Γ , Σᶠ l A B) n)
+  --   → (g : Tm (Γ , A , B) (subT C (subExt (wk ∘ wk) (pair (◁ ▼) ▼))))
+  --   → (p : Tm Γ (Σᶠ l A B))
+  --   ---------------------------------------------------------
+  --   → Tm Γ (subT C (subExt id p))
 
 
   -- A⁰-ind : ∀ {Γ n}
@@ -63,19 +91,5 @@ postulate
   --   ---------------------------------------------------------
   --   → Tm Γ (subT C (subExt id p))
 
-  -- Id-ind : ∀ {Γ n}
-  --   → (A : Ty Γ n)
-  --   → (C : Ty (Γ , A , subT A wk , Idᶠ (vsT (vsT A)) (vs vz) vz) n)
-  --   → (c : Tm (Γ , A) (subT (subT (subT C (subExt {!!} {!!})) {!!}) {!!}))
-  --   -- TODO replace third variable in C with refl!
-  --   → (a b : Tm Γ A)
-  --   → (p : Tm Γ (Idᶠ A a b))
-  --   -- → (c₀ : Tm Γ (subT C (subExt id zeroᶠ)))
-  --   -- → (cₛ : Tm (Γ , ℕᶠ) (subT C (subExt (π₁ id) (sucᶠ vz))))
-  --   -- → (n : Tm Γ ℕᶠ)
-  --   ---------------------------------------------------------
-  --   → {!!}
-  --   -- TODO replace third variable in C with p
-  --   -- → Tm Γ (subT C (subExt id n))
 
 -- K :

@@ -94,16 +94,7 @@ postulate
 
 -- Computation rules
 postulate
-  -- WITH • INTRO
-  -- •β : ∀{Γ n}
-  --   {A : Ty Γ 0}
-  --   {C : Ty (Γ , A) n}
-  --   {c : Tm (Γ , A) (subT C (subExt wk •))}
-  --   {a : Tm Γ A}
-  --   ---------------------------------------------------------
-  --   → •-ind C c a ≡[ {!!} ]≡ subt c (subExt id a)
 
-  -- WITHOUT • INTRO
   •β : ∀{Γ n}
     {A : Ty Γ 0}
     {C : Ty (Γ , A) n}
@@ -126,16 +117,17 @@ postulate
     ---------------------------------------------------------
     → λᶠ (appᶠ f) ≡ f
 
-  -- Σβ : ∀ {Γ n l i j}
+  -- Σβ : ∀{Γ l i j n}
   --   {A : Ty Γ i}
   --   {B : Ty (Γ , A) j}
-  --   {C : Ty (Γ , Σᶠ l A B) n}
-  --   {g : Tm (Γ , A , B) (subT C (subExt (wk ∘ wk) (pair (◁ ▼) ▼)))}
+  --   {C : Ty (Γ , (Σᶠ l A B)) n}
+  --   {g : Tm (Γ , A , subT B (subExt wk vz)) (subT C (subExt (wk ∘ wk) (pair (◁ ▼) ▼)))}
   --   {a : Tm Γ A}
   --   {b : Tm Γ (subT B (subExt id a))}
   --   ---------------------------------------------------------
-  --   -- → Σ-ind C g (pair a b) ≡[ TmΓ≡ {!!} ]≡ subt g (subExt (subExt id a) b)
-  --   → Σ-ind C g (pair a b) ≡[ TmΓ≡ (cong (subT C) {!!}) ]≡ subt g (subExt (subExt id a) b)
+  --   → split {A = A} {B = B} C g (pair a b)
+  --       ≡[ TmΓ≡ (Σβhack {Γ} {l} {i} {j} {n} {A} {B} {C} {g} {a} {b}) ]≡
+  --     subt g (subExt (subExt id a) b)
 
   ⊤β : ∀{Γ n}
     {C : Ty (Γ , ⊤ᶠ) n}
@@ -168,7 +160,7 @@ postulate
 {-# REWRITE Πη #-}
 {-# REWRITE ⊤β #-}
 {-# REWRITE ℕβ₀ #-}
-{-# REWRITE ℕβₙ #-}
+-- {-# REWRITE ℕβₙ #-}
 
 
 

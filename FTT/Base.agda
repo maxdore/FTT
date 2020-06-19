@@ -28,6 +28,18 @@ t $ u = subt (appᶠ t) < u >
 Σᶠc : {Γ : Cxt} {m n : ℕ} → (l : ℕ) → (A : Ty Γ m) → (B : Ty Γ n) → Ty Γ l
 Σᶠc {Γ} {m} {n} l A B = Σᶠ l A (vsT B)
 
+
+pred : ∀{Γ} → Tm Γ ℕᶠ → Tm Γ ℕᶠ
+pred x = ℕ-ind ℕᶠ zeroᶠ ▼ x
+
+-- Identity types
+
+-- sym : ∀{Γ n} {A : Ty Γ n} {a b : Tm Γ A} → (Tm Γ (Idᶠ A a b)) → (Tm Γ (Idᶠ A b a))
+-- sym {Γ} {n} {A} {a} {b} x = {!Id-ind!}
+
+-- TODO trans
+
+
 -- appf : ∀{Γ l m n} {A : Ty Γ m} {B : Ty Γ n} → Tm Γ (Πᶠc {Γ} {m} {n} l A B) → Tm Γ A → Tm Γ B
 -- appf f a = f $ a
 
@@ -40,8 +52,8 @@ t $ u = subt (appᶠ t) < u >
 
 -- Projections!
 
-Σπ₁simple : ∀{Γ} → Tm (Γ , Σᶠ 1 ℕᶠ ⊤ᶠ) (⊤ᶠ)
-Σπ₁simple = Σ-ind ⊤ᶠ ▼ ▼
+-- Σπ₁simple : ∀{Γ} → Tm (Γ , Σᶠ 1 ℕᶠ ⊤ᶠ) (⊤ᶠ)
+-- Σπ₁simple = Σ-ind ⊤ᶠ ▼ ▼
 
 -- π₁ᶠ : ∀ {Γ l j} → {A : Ty Γ l} → {B : Ty (Γ , A) j} → {p : Tm Γ (Σᶠ l A B)} → Tm Γ A
 -- π₁ᶠ {Γ} {l} {j} {A} {B} {p} = Σ-ind (◀ A) (◁ ▼) p
