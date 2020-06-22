@@ -26,8 +26,8 @@ data Ty where
   subT : {Γ Δ : Cxt} {n : ℕ} → Ty Δ n → Tms Γ Δ → Ty Γ n
   ⊥ᶠ : {Γ : Cxt} → Ty Γ 0
   ⊤ᶠ : {Γ : Cxt} → Ty Γ 0
-  Πᶠ : {Γ : Cxt} {m n : ℕ} → (l : ℕ) → (A : Ty Γ m) → (B : (Ty (Γ , A) n)) → Ty Γ l
-  Σᶠ : ∀{Γ m n} (l : ℕ) → (A : Ty Γ m) → (B : (Ty (Γ , A) n)) → Ty Γ l
+  Πᶠ : ∀{Γ m n} → (l : ℕ) → (A : Ty Γ m) → (B : (Ty (Γ , A) n)) → Ty Γ l
+  Σᶠ : ∀{Γ m n} → (l : ℕ) → (A : Ty Γ m) → (B : (Ty (Γ , A) n)) → Ty Γ l
   Idᶠ : {Γ : Cxt} {n : ℕ} → (A : Ty Γ n) → (a b : Tm Γ A) → Ty Γ (predℕ n)
   -- Idᶠ : {Γ : Cxt} {n : ℕ} → (A : Ty Γ n) → Ty (Γ , A , subT A wk) (predℕ n)
   ℕᶠ : {Γ : Cxt} → Ty Γ 1
@@ -131,6 +131,22 @@ data Tm where
     → (b : Tm Γ A)
     ---------------------------------------------------------
     → Tm Γ (subT C (subExt id b))
+
+  fst : ∀ {Γ l m n}
+    {A : Ty Γ m}
+    {B : (Ty (Γ , A) n)}
+    → Tm Γ (Σᶠ l A B)
+    ---------------------------------------------------------
+    → Tm Γ A
+
+  snd : ∀{Γ l m n}
+    {A : Ty Γ m}
+    {B : (Ty (Γ , A) n)}
+    → (t : Tm Γ (Σᶠ l A B))
+    ---------------------------------------------------------
+    → Tm Γ (subT B (subExt id (fst t)))
+
+
 
 
 δ ↑ A = subExt (δ ∘ π₁ id) (π₂ id)

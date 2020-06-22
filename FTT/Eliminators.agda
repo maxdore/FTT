@@ -6,27 +6,27 @@ open import FTT.Prelude
 open import FTT.Core
 open import FTT.Lemmas
 
-postulate
-  subtvzwk : ∀{Γ i}{A : Ty Γ i}{u : Tm Γ A} → (subt vz (id {Γ , A , subT A wk})) ≡ (π₂ id)
-  wkwksubExtExt :  ∀{Γ i}{A : Ty Γ i} {A : Ty Γ i} {a b : Tm Γ A}
-    → A ≡ (subT A ((π₁ id ∘ π₁ (id {Γ , A , (subT A wk)})) ∘ subExt (subExt id a) b))
+-- postulate
+--   subtvzwk : ∀{Γ i}{A : Ty Γ i}{u : Tm Γ A} → (subt vz (id {Γ , A , subT A wk})) ≡ (π₂ id)
+--   wkwksubExtExt :  ∀{Γ i}{A : Ty Γ i} {A : Ty Γ i} {a b : Tm Γ A}
+--     → A ≡ (subT A ((π₁ id ∘ π₁ (id {Γ , A , (subT A wk)})) ∘ subExt (subExt id a) b))
 
 
-{-# REWRITE subtvzwk #-}
+-- {-# REWRITE subtvzwk #-}
 
 
 
 -- Elimination principles
-postulate
+-- postulate
 
-  split : ∀{Γ l i j n}
-      {A : Ty Γ i}
-      {B : Ty (Γ , A) j}
-    → (C : Ty (Γ , (Σᶠ l A B)) n)
-    → (g : Tm (Γ , A , subT B (subExt wk vz)) (subT C (subExt (wk ∘ wk) (pair (◁ ▼) ▼))))
-    → (p : Tm Γ (Σᶠ l A B))
-    ---------------------------------------------------------
-    → Tm Γ (subT C (subExt id p))
+  -- split : ∀{Γ l i j n}
+  --     {A : Ty Γ i}
+  --     {B : Ty (Γ , A) j}
+  --   → (C : Ty (Γ , (Σᶠ l A B)) n)
+  --   → (g : Tm (Γ , A , subT B (subExt wk vz)) (subT C (subExt (wk ∘ wk) (pair (◁ ▼) ▼))))
+  --   → (p : Tm Γ (Σᶠ l A B))
+  --   ---------------------------------------------------------
+  --   → Tm Γ (subT C (subExt id p))
 
   -- Id-ind : ∀ {Γ n}
   --   → (A : Ty Γ n)

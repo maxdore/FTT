@@ -117,7 +117,7 @@ postulate
 
 SST zeroᶠ = ⊤¹
 -- SST (suc n) = Σᶠ (suc n) (SST n) (Πᶠ 0 (Sk (coe (TmΓ≡ SSTsubT) ▼) n) {!!}) -- Σ (SST j) λ X → Sk X j → Set
-SST (sucᶠ n) = Σᶠ 1 (SST n) (Πᶠ 0 (Sk (coe (TmΓ≡ SSTsubT) ▼) (◁ n)) ?)
+SST (sucᶠ n) = Σᶠ 1 (SST n) (Πᶠ 0 (Sk (coe (TmΓ≡ SSTsubT) ▼) (◁ n)) {!!})
 SST _ = ⊤¹
 
 Sk = {!!}

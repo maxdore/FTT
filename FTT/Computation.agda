@@ -117,17 +117,22 @@ postulate
     ---------------------------------------------------------
     → λᶠ (appᶠ f) ≡ f
 
-  -- Σβ : ∀{Γ l i j n}
-  --   {A : Ty Γ i}
-  --   {B : Ty (Γ , A) j}
-  --   {C : Ty (Γ , (Σᶠ l A B)) n}
-  --   {g : Tm (Γ , A , subT B (subExt wk vz)) (subT C (subExt (wk ∘ wk) (pair (◁ ▼) ▼)))}
-  --   {a : Tm Γ A}
-  --   {b : Tm Γ (subT B (subExt id a))}
-  --   ---------------------------------------------------------
-  --   → split {A = A} {B = B} C g (pair a b)
-  --       ≡[ TmΓ≡ (Σβhack {Γ} {l} {i} {j} {n} {A} {B} {C} {g} {a} {b}) ]≡
-  --     subt g (subExt (subExt id a) b)
+  Σβ₁ : ∀{Γ l m n}
+    {A : Ty Γ m}
+    {B : Ty (Γ , A) n}
+    {a : Tm Γ A}
+    {b : Tm Γ (subT B (subExt id a))}
+    ---------------------------------------------------------
+    → fst {Γ} {l} {m} {n} {A} {B} (pair a b) ≡ a
+
+  Σβ₂ : ∀{Γ l m n}
+    {A : Ty Γ m}
+    {B : Ty (Γ , A) n}
+    {a : Tm Γ A}
+    {b : Tm Γ (subT B (subExt id a))}
+    ---------------------------------------------------------
+    → snd {Γ} {l} {m} {n} {A} {B} (pair a b)
+      ≡ coe (TmΓ≡ (cong (subT B) (cong (subExt id) (Σβ₁ ⁻¹)))) b
 
   ⊤β : ∀{Γ n}
     {C : Ty (Γ , ⊤ᶠ) n}
@@ -160,8 +165,9 @@ postulate
 {-# REWRITE Πη #-}
 {-# REWRITE ⊤β #-}
 {-# REWRITE ℕβ₀ #-}
--- {-# REWRITE ℕβₙ #-}
-
+{-# REWRITE ℕβₙ #-}
+{-# REWRITE Σβ₁ #-}
+{-# REWRITE Σβ₂ #-}
 
 
 
