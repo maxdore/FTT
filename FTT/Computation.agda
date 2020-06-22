@@ -34,10 +34,17 @@ postulate
   --   {δ : Tms (Γ , A) Γ}
   --   ---------------------------------------------------------
   --   → subt (pair {Γ} {l} {m} {n} {A} {B} a b) δ ≡ pair (subt a δ) (subt b {!δ!})
+  
+  -- alternative for fst, snd, and derive converse?
 
   tt[] : ∀{Γ Δ} {δ : Tms Γ Δ} → subt ttᶠ δ ≡ ttᶠ
   zero[] : ∀{Γ Δ} {δ : Tms Γ Δ} → subt zeroᶠ δ ≡ zeroᶠ
   suc[] : ∀{Γ Δ} {δ : Tms Γ Δ} {n : Tm Δ ℕᶠ} → subt (sucᶠ n) δ ≡ sucᶠ (subt n δ)
+
+  -- TODO
+  -- U[] : ... subt (𝓤 n ℓ) δ → 𝓤 n l
+  -- dec[] : ... subt (dec a) δ → dec (subt a)
+
 
   -- A⁰-ind[] : ∀ {Γ Δ n} {δ : Tms Γ Δ}
   --     {A : Ty Δ 0}
@@ -102,6 +109,12 @@ postulate
     {c : Tm Γ (subT C (subExt id a))}
     ---------------------------------------------------------
     → •-ind C a c a ≡ c
+
+  -- Uβ :
+  --   → dec (enc A) ≡ A
+
+  -- Uη :
+  --   → enc (dec A) ≡ A
 
   Πβ : ∀{Γ l m n}
     {A : Ty Γ m}

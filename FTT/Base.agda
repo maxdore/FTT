@@ -47,16 +47,3 @@ pred x = ℕ-ind ℕᶠ zeroᶠ ▼ x
 -- Σ : ∀{Γ i j} → (l : ℕ) → (A : Ty Γ i) → (B : Ty (Γ , A) j) → {!!}
 -- Σ {Γ} {i} {j} l A B = {k : ℕ} → (C : Ty Γ k) → (x : Tm Γ A) → {!!}
 
-
-
-
--- Projections!
-
--- Σπ₁simple : ∀{Γ} → Tm (Γ , Σᶠ 1 ℕᶠ ⊤ᶠ) (⊤ᶠ)
--- Σπ₁simple = Σ-ind ⊤ᶠ ▼ ▼
-
--- π₁ᶠ : ∀ {Γ l j} → {A : Ty Γ l} → {B : Ty (Γ , A) j} → {p : Tm Γ (Σᶠ l A B)} → Tm Γ A
--- π₁ᶠ {Γ} {l} {j} {A} {B} {p} = Σ-ind (◀ A) (◁ ▼) p
-
--- π₂ᶠ : ∀ {Γ l i j} → {A : Ty Γ i} → {B : Ty (Γ , A) j} → Tm (Γ , Σᶠ l A B) {!B!}
--- π₂ᶠ {Γ} {l} {i} {j} {A} {B} = Σ-ind {!!} {!!} {!!}

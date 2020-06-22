@@ -10,10 +10,13 @@ x ≡[ α ]≡ y = coe α x ≡ y
 
 infix 4 _≡[_]≡_
 
+𝔻 = ℕ
+-- 𝕃 = ℕ
+
 data Cxt : Set
-data Ty : Cxt → ℕ → Set
+data Ty : Cxt → 𝔻 → Set
 data Tms : Cxt → Cxt → Set
-data Tm : (Γ : Cxt) → {n : ℕ} → Ty Γ n → Set
+data Tm : (Γ : Cxt) → {n : 𝔻} → Ty Γ n → Set
 
 data Cxt where
   ⟨⟩ : Cxt
@@ -146,7 +149,9 @@ data Tm where
     ---------------------------------------------------------
     → Tm Γ (subT B (subExt id (fst t)))
 
-
+  -- 𝓤 : ∀{Γ} (n : 𝔻) → (ℓ : 𝕃) → Ty Γ n (suc ℓ)
+  -- dec : ∀{Γ n ℓ} → Tm Γ (𝓤 n ℓ) → Ty Γ n ℓ
+  -- enc : ∀{Γ n ℓ} → Ty Γ n ℓ → Tm Γ (𝓤 n ℓ)
 
 
 δ ↑ A = subExt (δ ∘ π₁ id) (π₂ id)
