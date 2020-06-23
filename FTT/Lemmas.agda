@@ -34,24 +34,37 @@ postulate
   wk∘<> : ∀{Γ i}{A : Ty Γ i}{u : Tm Γ A} → (π₁ id) ∘ (subExt id u) ≡ id
 -- wk∘<> = π₁id∘ ◾ π₁β
 
+  -- necessary for refl in c in Id-ind
+  subt◀wk : ∀{Γ i} {A : Ty Γ i} → (subt (π₂ id) (π₁ (id {Γ , A , subT A wk}))) ≡ (π₂ id)
+
+  IdHackLemma : ∀ {Γ n} {A : Ty Γ n} {a : Tm Γ A}
+     → A ≡ subT (subT A wk) (subExt id a)
+
+  IdHack : ∀ {Γ n} {A : Ty Γ n} {a b : Tm Γ A}
+     → Idᶠ A a b ≡ subT (Idᶠ (◀ (◀ A)) (◁ ▼) (π₂ (id {Γ , A , subT A wk}))) (subExt (subExt id a) (coe (TmΓ≡ IdHackLemma) b))
+
   natHack : {Γ : Cxt} {n : Tm Γ ℕᶠ} → subExt id (sucᶠ n) ≡ (subExt (π₁ id) (sucᶠ (π₂ id)) ∘ subExt id n)
 
+  -- A != (subT A ((π₁ id ∘ π₁ id) ∘ subExt (subExt id a) b))
+
 {-# REWRITE wk∘<> #-}
+{-# REWRITE subt◀wk #-}
+-- {-# REWRITE IdHack #-}
 {-# REWRITE natHack #-}
 
-postulate
-  Σhack : ∀ {Γ n l i j}
-    {A : Ty Γ i}
-    {B : Ty (Γ , A) j}
-    {C : Ty (Γ , Σᶠ l A B) n}
-    ---------------------------------------------------------
-    -- → π₁ (id {Γ , A , B}) ≡ (((π₁ (id {Γ , A})) ∘ (π₁ (id {Γ , A , B}))) ↑ A) ∘ subExt id (vs vz)
-    -- → π₁ id ≡ subExt ((π₁ id ∘ (π₁ id ∘ π₁ id)) ∘ subExt id (vs vz))
-    → subT B (π₁ (id {Γ , A , B})) ≡ subT (subT B ((wk ∘ wk) ↑ A)) (subExt id (vs vz))
+-- postulate
+--   Σhack : ∀ {Γ n l i j}
+--     {A : Ty Γ i}
+--     {B : Ty (Γ , A) j}
+--     {C : Ty (Γ , Σᶠ l A B) n}
+--     ---------------------------------------------------------
+--     -- → π₁ (id {Γ , A , B}) ≡ (((π₁ (id {Γ , A})) ∘ (π₁ (id {Γ , A , B}))) ↑ A) ∘ subExt id (vs vz)
+--     -- → π₁ id ≡ subExt ((π₁ id ∘ (π₁ id ∘ π₁ id)) ∘ subExt id (vs vz))
+--     → subT B (π₁ (id {Γ , A , B})) ≡ subT (subT B ((wk ∘ wk) ↑ A)) (subExt id (vs vz))
 
 
 
-{-# REWRITE Σhack #-}
+-- {-# REWRITE Σhack #-}
 
 -- Σhack2 : ∀{Γ i j}
 --   {A : Ty Γ i}

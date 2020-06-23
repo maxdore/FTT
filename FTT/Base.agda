@@ -39,6 +39,12 @@ pred x = ℕ-ind ℕᶠ zeroᶠ ▼ x
 
 -- TODO trans
 
+postulate
+  subst : ∀{Γ m n} {A : Ty Γ m} {x y : Tm Γ A}
+    → (B : Ty (Γ , A) n) → (p : Tm Γ (Idᶠ A x y)) → Tm Γ (subT B (subExt id x)) → Tm Γ (subT B (subExt id y))
+-- subst B p x = {!!}
+
+-- TODO ap (x = y implies fx = fy)
 
 -- appf : ∀{Γ l m n} {A : Ty Γ m} {B : Ty Γ n} → Tm Γ (Πᶠc {Γ} {m} {n} l A B) → Tm Γ A → Tm Γ B
 -- appf f a = f $ a

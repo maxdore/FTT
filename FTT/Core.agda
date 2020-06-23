@@ -11,7 +11,9 @@ x ≡[ α ]≡ y = coe α x ≡ y
 infix 4 _≡[_]≡_
 
 𝔻 = ℕ
--- 𝕃 = ℕ
+pred𝔻 = predℕ
+suc𝔻 = suc
+-- 𝕃 = 𝔻
 
 data Cxt : Set
 data Ty : Cxt → 𝔻 → Set
@@ -20,30 +22,31 @@ data Tm : (Γ : Cxt) → {n : 𝔻} → Ty Γ n → Set
 
 data Cxt where
   ⟨⟩ : Cxt
-  _,_ : (Γ : Cxt) → {n : ℕ} → Ty Γ n → Cxt
+  _,_ : (Γ : Cxt) → {n : 𝔻} → Ty Γ n → Cxt
 
 infixl 20 _,_
 
 -- Type formers
 data Ty where
-  subT : {Γ Δ : Cxt} {n : ℕ} → Ty Δ n → Tms Γ Δ → Ty Γ n
+  subT : {Γ Δ : Cxt} {n : 𝔻} → Ty Δ n → Tms Γ Δ → Ty Γ n
   ⊥ᶠ : {Γ : Cxt} → Ty Γ 0
   ⊤ᶠ : {Γ : Cxt} → Ty Γ 0
-  Πᶠ : ∀{Γ m n} → (l : ℕ) → (A : Ty Γ m) → (B : (Ty (Γ , A) n)) → Ty Γ l
-  Σᶠ : ∀{Γ m n} → (l : ℕ) → (A : Ty Γ m) → (B : (Ty (Γ , A) n)) → Ty Γ l
-  Idᶠ : {Γ : Cxt} {n : ℕ} → (A : Ty Γ n) → (a b : Tm Γ A) → Ty Γ (predℕ n)
-  -- Idᶠ : {Γ : Cxt} {n : ℕ} → (A : Ty Γ n) → Ty (Γ , A , subT A wk) (predℕ n)
+  Πᶠ : ∀{Γ m n} → (l : 𝔻) → (A : Ty Γ m) → (B : (Ty (Γ , A) n)) → Ty Γ l
+  Σᶠ : ∀{Γ m n} → (l : 𝔻) → (A : Ty Γ m) → (B : (Ty (Γ , A) n)) → Ty Γ l
+  Idᶠ : {Γ : Cxt} {n : 𝔻} → (A : Ty Γ n) → (a b : Tm Γ A) → Ty Γ (pred𝔻 n)
+  -- Idᶠ : {Γ : Cxt} {n : 𝔻} → (A : Ty Γ n) → Ty (Γ , A , subT A wk) (pred𝔻 n)
   ℕᶠ : {Γ : Cxt} → Ty Γ 1
   Finᶠ : {Γ : Cxt} → Tm Γ ℕᶠ → Ty Γ 1
+  𝓤 : ∀{Γ} → (n : 𝔻) → Ty Γ (suc𝔻 n)
 
 
 -- Substitutions
 data Tms where
   ε : {Γ : Cxt} → Tms Γ ⟨⟩
-  subExt : {Γ Δ : Cxt} → {n : ℕ} → {A : Ty Δ n} → (δ : Tms Γ Δ) → Tm Γ (subT A δ) → Tms Γ (Δ , A)
+  subExt : {Γ Δ : Cxt} → {n : 𝔻} → {A : Ty Δ n} → (δ : Tms Γ Δ) → Tm Γ (subT A δ) → Tms Γ (Δ , A)
   id : {Γ : Cxt} → Tms Γ Γ
   _∘_ : {Γ Δ Σ : Cxt} → Tms Δ Σ → Tms Γ Δ → Tms Γ Σ
-  π₁ : {Γ Δ : Cxt} → {n : ℕ} → {A : Ty Δ n} → Tms Γ (Δ , A) → Tms Γ Δ
+  π₁ : {Γ Δ : Cxt} → {n : 𝔻} → {A : Ty Δ n} → Tms Γ (Δ , A) → Tms Γ Δ
 
 
 -- infixr 40 bind
@@ -59,32 +62,34 @@ postulate
 {-# REWRITE [id]T #-}
 {-# REWRITE [][]T #-}
 
-_↑_  : {Γ Δ : Cxt} {n : ℕ} → (δ : Tms Γ Δ)(A : Ty Δ n) → Tms (Γ , (subT A δ)) (Δ , A)
+_↑_  : {Γ Δ : Cxt} {n : 𝔻} → (δ : Tms Γ Δ)(A : Ty Δ n) → Tms (Γ , (subT A δ)) (Δ , A)
 -- δ ↑ A = subExt (δ ∘ π₁ id) (coe (TmΓ≡ [][]T) (π₂ id))
 
 postulate
-  Π[] : {Γ Δ : Cxt} {l m n : ℕ} {A : Ty Δ m} {B : Ty (Δ , A) n} {δ : Tms Γ Δ} → subT (Πᶠ l A B) δ ≡ Πᶠ l (subT A δ) (subT B (δ ↑ A))
+  𝓤[] : {Γ Δ : Cxt} {n : 𝔻} {δ : Tms Γ Δ} → subT (𝓤 n) δ ≡ 𝓤 n
+  Π[] : {Γ Δ : Cxt} {l m n : 𝔻} {A : Ty Δ m} {B : Ty (Δ , A) n} {δ : Tms Γ Δ} → subT (Πᶠ l A B) δ ≡ Πᶠ l (subT A δ) (subT B (δ ↑ A))
   Σ[] : ∀{Γ Δ l m n}{A : Ty Δ m} {B : Ty (Δ , A) n} {δ : Tms Γ Δ} → subT (Σᶠ l A B) δ ≡ Σᶠ l (subT A δ) (subT B (δ ↑ A))
   ⊤[] : ∀{Γ Δ} {δ : Γ ⇒ Δ} → subT ⊤ᶠ δ ≡ ⊤ᶠ
-  ℕ[] : {Γ Δ : Cxt} {δ : Tms Γ Δ} → subT ℕᶠ δ ≡ ℕᶠ
+  𝔻[] : {Γ Δ : Cxt} {δ : Tms Γ Δ} → subT ℕᶠ δ ≡ ℕᶠ
 
+{-# REWRITE 𝓤[] #-}
 {-# REWRITE ⊤[] #-}
 {-# REWRITE Π[] #-}
 {-# REWRITE Σ[] #-}
-{-# REWRITE ℕ[] #-}
+{-# REWRITE 𝔻[] #-}
 
 
-wk : {Γ : Cxt} {n : ℕ} {A : Ty Γ n} → Tms (Γ , A) Γ
-vz : {Γ : Cxt} {n : ℕ} {A : Ty Γ n} → Tm (Γ , A) (subT A wk)
-vs : {Γ : Cxt} {m n : ℕ} {A : Ty Γ m} {B : Ty Γ n} → Tm Γ A → Tm (Γ , B) (subT A wk)
+wk : {Γ : Cxt} {n : 𝔻} {A : Ty Γ n} → Tms (Γ , A) Γ
+vz : {Γ : Cxt} {n : 𝔻} {A : Ty Γ n} → Tm (Γ , A) (subT A wk)
+vs : {Γ : Cxt} {m n : 𝔻} {A : Ty Γ m} {B : Ty Γ n} → Tm Γ A → Tm (Γ , B) (subT A wk)
 vsT : ∀{Γ m n} {A : Ty Γ m} → Ty Γ n → Ty (Γ , A) n
 
 
 
 data Tm where
   -- Structural terms
-  subt : {Γ Δ : Cxt} {n : ℕ} {A : Ty Δ n} → Tm Δ A → (δ : Tms Γ Δ) → Tm Γ (subT A δ)
-  π₂ : {Γ Δ : Cxt} {n : ℕ} {A : Ty Δ n} → (δ : Tms Γ (Δ , A)) → Tm Γ (subT A (π₁ δ))
+  subt : {Γ Δ : Cxt} {n : 𝔻} {A : Ty Δ n} → Tm Δ A → (δ : Tms Γ Δ) → Tm Γ (subT A δ)
+  π₂ : {Γ Δ : Cxt} {n : 𝔻} {A : Ty Δ n} → (δ : Tms Γ (Δ , A)) → Tm Γ (subT A (π₁ δ))
 
   λᶠ : ∀ {Γ l m n}
       {A : Ty Γ m}
@@ -108,13 +113,12 @@ data Tm where
     ---------------------------------------------------------
     → Tm Γ (Σᶠ l A B)
 
-
   ttᶠ : {Γ : Cxt} → Tm Γ ⊤ᶠ
   zeroᶠ : {Γ : Cxt} → Tm Γ ℕᶠ
   sucᶠ : {Γ : Cxt} → Tm Γ ℕᶠ → Tm Γ ℕᶠ
   fzeroᶠ : {Γ : Cxt} → {n : Tm Γ ℕᶠ} → Tm Γ (Finᶠ (sucᶠ n))
   fsucᶠ : {Γ : Cxt} {n : Tm Γ ℕᶠ} → Tm Γ (Finᶠ n) → Tm Γ (Finᶠ (sucᶠ n))
-  reflᶠ : {Γ : Cxt} {n : ℕ} → {A : Ty Γ n} → {a : Tm Γ A} → Tm Γ (Idᶠ A a a)
+  reflᶠ : {Γ : Cxt} {n : 𝔻} → {A : Ty Γ n} → {a : Tm Γ A} → Tm Γ (Idᶠ A a a)
 
   ⊤-ind : ∀ {Γ n} (C : Ty (Γ , ⊤ᶠ) n) (c : Tm Γ (subT C (subExt id ttᶠ))) (a : Tm Γ ⊤ᶠ) → Tm Γ (subT C (subExt id a))
 
@@ -149,9 +153,10 @@ data Tm where
     ---------------------------------------------------------
     → Tm Γ (subT B (subExt id (fst t)))
 
-  -- 𝓤 : ∀{Γ} (n : 𝔻) → (ℓ : 𝕃) → Ty Γ n (suc ℓ)
-  -- dec : ∀{Γ n ℓ} → Tm Γ (𝓤 n ℓ) → Ty Γ n ℓ
-  -- enc : ∀{Γ n ℓ} → Ty Γ n ℓ → Tm Γ (𝓤 n ℓ)
+
+postulate
+  dec : ∀{Γ n} → Tm Γ (𝓤 n) → Ty Γ n
+  enc : ∀{Γ n} → Ty Γ n → Tm Γ (𝓤 n)
 
 
 δ ↑ A = subExt (δ ∘ π₁ id) (π₂ id)
@@ -167,16 +172,16 @@ vsT B = subT B wk
 ◀ = vsT
 
 
-Ty≡ : {Γ₀ Γ₁ : Cxt}{n : ℕ }(Γ₂ : Γ₀ ≡ Γ₁) → Ty Γ₀ n ≡ Ty Γ₁ n
+Ty≡ : {Γ₀ Γ₁ : Cxt}{n : 𝔻 }(Γ₂ : Γ₀ ≡ Γ₁) → Ty Γ₀ n ≡ Ty Γ₁ n
 Ty≡ refl = refl
 
 Tms≡ : {Γ₀ Γ₁ : Cxt}(Γ₂ : Γ₀ ≡ Γ₁){Δ₀ Δ₁ : Cxt}(Δ₂ : Δ₀ ≡ Δ₁) → Tms Γ₀ Δ₀ ≡ Tms Γ₁ Δ₁
 Tms≡ refl refl = refl
 
-TmΓ≡ : {Γ : Cxt} {n : ℕ} {A B : Ty Γ n} → (A ≡ B) → Tm Γ A ≡ Tm Γ B
+TmΓ≡ : {Γ : Cxt} {n : 𝔻} {A B : Ty Γ n} → (A ≡ B) → Tm Γ A ≡ Tm Γ B
 TmΓ≡ {Γ} p = cong (Tm Γ) p
 
-,C= : {Γ₀ Γ₁ : Cxt}{n : ℕ}(Γ₂ : Γ₀ ≡ Γ₁){A₀ : Ty Γ₀ n}{A₁ : Ty Γ₁ n}(A₂ : A₀ ≡[ Ty≡ Γ₂ ]≡ A₁)
+,C= : {Γ₀ Γ₁ : Cxt}{n : 𝔻}(Γ₂ : Γ₀ ≡ Γ₁){A₀ : Ty Γ₀ n}{A₁ : Ty Γ₁ n}(A₂ : A₀ ≡[ Ty≡ Γ₂ ]≡ A₁)
   → _≡_ {A = Cxt} (Γ₀ , A₀) (Γ₁ , A₁)
 ,C= refl refl = refl
 
@@ -187,14 +192,14 @@ postulate
   idr : {Γ Δ : Cxt} {δ : Tms Γ Δ} → δ ∘ id ≡ δ
   ass : {Γ Δ Σ Ω : Cxt} {δ : Tms Γ Δ} {σ : Tms Σ Γ} {ν : Tms Ω Σ} →
     (δ ∘ σ) ∘ ν ≡ δ ∘ (σ ∘ ν)
-  ,∘ : {Γ Δ Σ : Cxt} {n : ℕ} {A : Ty Δ n} {δ : Tms Γ Δ} {σ : Tms Σ Γ} {t : Tm Γ (subT A δ)} →
+  ,∘ : {Γ Δ Σ : Cxt} {n : 𝔻} {A : Ty Δ n} {δ : Tms Γ Δ} {σ : Tms Σ Γ} {t : Tm Γ (subT A δ)} →
     (subExt δ t) ∘ σ ≡ subExt {Σ} {Δ} {n} {A} (δ ∘ σ) (coe (TmΓ≡ {Σ} {n} {subT (subT A δ) σ} {subT A (δ ∘ σ)} ([][]T {Γ} {Δ} {Σ} {n} {A} {δ} {σ})) (subt t σ))
-  π₁β : {Γ Δ : Cxt} {n : ℕ} {A : Ty Δ n} {δ : Tms Γ Δ} {t : Tm Γ (subT A δ)} →
+  π₁β : {Γ Δ : Cxt} {n : 𝔻} {A : Ty Δ n} {δ : Tms Γ Δ} {t : Tm Γ (subT A δ)} →
     π₁ {Γ} {Δ} {n} {A} (subExt δ t) ≡ δ
-  πη  : {Γ Δ : Cxt} {n : ℕ} {A : Ty Δ n} {δ : Tms Γ (Δ , A)} →
+  πη  : {Γ Δ : Cxt} {n : 𝔻} {A : Ty Δ n} {δ : Tms Γ (Δ , A)} →
     subExt (π₁ δ) (π₂ δ) ≡ δ
   -- TODO WHERE DID THIS COME FROM?
-  -- π[]t  : {Γ Δ : Cxt} {n : ℕ} {A : Ty Δ n} {δ : Tms Γ (Δ , A)} →
+  -- π[]t  : {Γ Δ : Cxt} {n : 𝔻} {A : Ty Δ n} {δ : Tms Γ (Δ , A)} →
   --   subt (π₂ δ) (π₁ id) ≡ subt {!subt!} id
   εη  : {Γ : Cxt} {ε' : Tms Γ ⟨⟩} → ε' ≡ ε
 

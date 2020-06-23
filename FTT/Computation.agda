@@ -16,6 +16,10 @@ postulate
   π₂β : {Γ Δ : Cxt} {n : ℕ} {A : Ty Δ n} {δ : Tms Γ Δ} {a : Tm Γ (subT A δ)} →
     π₂ {Γ} {Δ} {n} {A} (subExt δ a) ≡ a
 
+  enc[] : ∀{Γ Δ n} {δ : Tms Γ Δ}
+    {A : Ty Δ n}
+    → subt (enc A) δ ≡ enc (subT A δ)
+
   -- TODO DONT WE NEED δ : (Γ , A) Δ ???
   λ[] : ∀ {Γ l m n}
     {A : Ty Γ m}
@@ -34,7 +38,7 @@ postulate
   --   {δ : Tms (Γ , A) Γ}
   --   ---------------------------------------------------------
   --   → subt (pair {Γ} {l} {m} {n} {A} {B} a b) δ ≡ pair (subt a δ) (subt b {!δ!})
-  
+
   -- alternative for fst, snd, and derive converse?
 
   tt[] : ∀{Γ Δ} {δ : Tms Γ Δ} → subt ttᶠ δ ≡ ttᶠ
@@ -86,6 +90,7 @@ postulate
 {-# REWRITE [id]t #-}
 {-# REWRITE [][]t #-}
 {-# REWRITE π₂β #-}
+{-# REWRITE enc[] #-}
 {-# REWRITE λ[] #-}
 {-# REWRITE tt[] #-}
 {-# REWRITE zero[] #-}
@@ -110,11 +115,13 @@ postulate
     ---------------------------------------------------------
     → •-ind C a c a ≡ c
 
-  -- Uβ :
-  --   → dec (enc A) ≡ A
+  𝓤β : ∀{Γ n}
+    {A : Ty Γ n}
+    → dec (enc A) ≡ A
 
-  -- Uη :
-  --   → enc (dec A) ≡ A
+  𝓤η : ∀{Γ n}
+    {A : Tm Γ (𝓤 n)}
+    → enc (dec A) ≡ A
 
   Πβ : ∀{Γ l m n}
     {A : Ty Γ m}
@@ -174,6 +181,8 @@ postulate
 
 
 {-# REWRITE •β #-}
+{-# REWRITE 𝓤β #-}
+{-# REWRITE 𝓤η #-}
 {-# REWRITE Πβ #-}
 {-# REWRITE Πη #-}
 {-# REWRITE ⊤β #-}

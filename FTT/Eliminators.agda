@@ -19,23 +19,14 @@ open import FTT.Lemmas
 -- Elimination principles
 -- postulate
 
-  -- split : ∀{Γ l i j n}
-  --     {A : Ty Γ i}
-  --     {B : Ty (Γ , A) j}
-  --   → (C : Ty (Γ , (Σᶠ l A B)) n)
-  --   → (g : Tm (Γ , A , subT B (subExt wk vz)) (subT C (subExt (wk ∘ wk) (pair (◁ ▼) ▼))))
-  --   → (p : Tm Γ (Σᶠ l A B))
-  --   ---------------------------------------------------------
-  --   → Tm Γ (subT C (subExt id p))
-
-  -- Id-ind : ∀ {Γ n}
-  --   → (A : Ty Γ n)
-  --   → (C : Ty (Γ , A , subT A wk , Idᶠ (vsT (vsT A)) (vs vz) vz) n)
-  --   → (c : Tm (Γ , A) (subT C (subExt (subExt (subExt wk vz) vz) {!!})))
-  --   → (a b : Tm Γ A)
-  --   → (p : Tm Γ (Idᶠ A a b))
-  --   ---------------------------------------------------------
-  --   → Tm Γ (subT C (subExt (subExt (subExt id a) b) (coe (TmΓ≡ (cong (Idᶠ {!!} {!!}) {!!})) p)))
+--   Id-ind : ∀ {Γ n}
+--     → (A : Ty Γ n)
+--     → (C : Ty (Γ , A , subT A wk , Idᶠ (◀ (◀ A)) (◁ ▼) ▼) n)
+--     → (c : Tm (Γ , A) (subT C (subExt (subExt (subExt wk ▼) ▼) reflᶠ)))
+--     → (a b : Tm Γ A)
+--     → (p : Tm Γ (Idᶠ A a b))
+--     ---------------------------------------------------------
+--     → Tm Γ (subT C (subExt (subExt (subExt id a) b) (coe (TmΓ≡ IdHack) p)))
 
 
   -- Σ-ind : ∀ {Γ n l i j}
