@@ -4,8 +4,8 @@ This repository contains a highly experimental implementation of
 finite-dimensional type theory, presented at HoTT/UF 2020:
 https://hott-uf.github.io/2020/HoTTUF_2020_paper_11.pdf
 
-The implementation makes use the construction of a type theory in type theory
-presented by [Altenkirch and Kaposi](https://doi.org/10.1145/2914770.2837638).
+The implementation makes use the construction of type theory inside type theory
+by [Altenkirch and Kaposi, 2016](https://doi.org/10.1145/2914770.2837638).
 
 The core rules can be found in 'FTT/Core.agda'. 
 
