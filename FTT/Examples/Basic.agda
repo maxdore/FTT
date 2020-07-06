@@ -15,6 +15,8 @@ open import FTT.Base
 -- exC : Ty (⟨⟩ , ⊤ᶠ) 0
 -- exC = ⊤-ind vz
 
+pred : ∀{Γ} → Tm Γ ℕᶠ → Tm Γ ℕᶠ
+pred x = ℕ-ind ℕᶠ zeroᶠ ▼ x
 
 +1 : ∀{Γ} → Tm Γ (Πᶠ 0 ℕᶠ ℕᶠ)
 +1 {Γ}= λᶠ (ℕ-ind ℕᶠ (sucᶠ zeroᶠ) (sucᶠ vz) vz)
@@ -31,8 +33,6 @@ open import FTT.Base
 
 ⊤tt : Tm ⟨⟩ ℕᶠ
 ⊤tt = ⊤test $ ttᶠ
-
-
 
 
 

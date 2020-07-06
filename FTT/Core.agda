@@ -37,6 +37,7 @@ data Ty where
   -- Idᶠ : {Γ : Cxt} {n : 𝔻} → (A : Ty Γ n) → Ty (Γ , A , subT A wk) (pred𝔻 n)
   ℕᶠ : {Γ : Cxt} → Ty Γ 1
   Finᶠ : {Γ : Cxt} → Tm Γ ℕᶠ → Ty Γ 1
+  cumT : ∀{Γ n} → Ty Γ n → Ty Γ (suc𝔻 n)
   𝓤 : ∀{Γ} → (n : 𝔻) → Ty Γ (suc𝔻 n)
 
 
@@ -91,6 +92,17 @@ data Tm where
   subt : {Γ Δ : Cxt} {n : 𝔻} {A : Ty Δ n} → Tm Δ A → (δ : Tms Γ Δ) → Tm Γ (subT A δ)
   π₂ : {Γ Δ : Cxt} {n : 𝔻} {A : Ty Δ n} → (δ : Tms Γ (Δ , A)) → Tm Γ (subT A (π₁ δ))
 
+  cumt : ∀{Γ n} {A : Ty Γ n} → Tm Γ A → Tm Γ (cumT A)
+
+  •-ind : ∀ {Γ n}
+    {A : Ty Γ 0}
+    → (C : Ty (Γ , A) n)
+    → (a : Tm Γ A)
+    → (c : Tm Γ (subT C (subExt id a)))
+    → (b : Tm Γ A)
+    ---------------------------------------------------------
+    → Tm Γ (subT C (subExt id b))
+
   λᶠ : ∀ {Γ l m n}
       {A : Ty Γ m}
       {B : (Ty (Γ , A) n)}
@@ -113,6 +125,20 @@ data Tm where
     ---------------------------------------------------------
     → Tm Γ (Σᶠ l A B)
 
+  fst : ∀ {Γ l m n}
+    {A : Ty Γ m}
+    {B : (Ty (Γ , A) n)}
+    → Tm Γ (Σᶠ l A B)
+    ---------------------------------------------------------
+    → Tm Γ A
+
+  snd : ∀{Γ l m n}
+    {A : Ty Γ m}
+    {B : (Ty (Γ , A) n)}
+    → (t : Tm Γ (Σᶠ l A B))
+    ---------------------------------------------------------
+    → Tm Γ (subT B (subExt id (fst t)))
+
   ttᶠ : {Γ : Cxt} → Tm Γ ⊤ᶠ
   zeroᶠ : {Γ : Cxt} → Tm Γ ℕᶠ
   sucᶠ : {Γ : Cxt} → Tm Γ ℕᶠ → Tm Γ ℕᶠ
@@ -130,28 +156,8 @@ data Tm where
     ---------------------------------------------------------
     → Tm Γ (subT C (subExt id n))
 
-  •-ind : ∀ {Γ n}
-      {A : Ty Γ 0}
-    → (C : Ty (Γ , A) n)
-    → (a : Tm Γ A)
-    → (c : Tm Γ (subT C (subExt id a)))
-    → (b : Tm Γ A)
-    ---------------------------------------------------------
-    → Tm Γ (subT C (subExt id b))
-
-  fst : ∀ {Γ l m n}
-    {A : Ty Γ m}
-    {B : (Ty (Γ , A) n)}
-    → Tm Γ (Σᶠ l A B)
-    ---------------------------------------------------------
-    → Tm Γ A
-
-  snd : ∀{Γ l m n}
-    {A : Ty Γ m}
-    {B : (Ty (Γ , A) n)}
-    → (t : Tm Γ (Σᶠ l A B))
-    ---------------------------------------------------------
-    → Tm Γ (subT B (subExt id (fst t)))
+  -- Fin needs two recursors:
+  --  https://books.google.co.uk/books?id=tQFqCQAAQBAJ&pg=PA100&lpg=PA100&dq=finite+type+recursor&source=bl&ots=kcZEtnqjQf&sig=ACfU3U2j_8WUeTJHLMPmAfm5r6e6JFDyyA&hl=de&sa=X&ved=2ahUKEwj6pb2anZjqAhVFlFwKHR05AscQ6AEwAHoECCkQAQ#v=onepage&q=finite%20type%20recursor&f=false
 
 
 postulate

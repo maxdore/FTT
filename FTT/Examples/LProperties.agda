@@ -23,24 +23,27 @@ Ltest2 = λᶠ (•-ind ((Πᶠ 0 ℕᶠ ℕᶠ)) idf ▼ ▼) -- λᶠ (•-ind
 ⊤Elim C c a = •-ind C ttᶠ c a
 
 
-
-
 postulate
   UIPhack : ∀{Γ} → {A : Ty Γ 1} → {a b : Tm Γ A}
     → (subT (Idᶠ A a b) (π₁ (id {Γ , Idᶠ A a b}))) ≡ (Idᶠ (◀ A) (◁ a) (◁ b))
-
-
--- {-# REWRITE UIPhack #-}
+  UIPhack2 : ∀{Γ} → {A : Ty Γ 1} → {a b : Tm Γ A} → {p q : Tm Γ (Idᶠ A a b)}
+    → Idᶠ (Idᶠ A a b) p q ≡ subT (Idᶠ (Idᶠ (◀ A) (◁ a) (◁ b)) (coe (TmΓ≡ UIPhack) (◁ p)) (coe (TmΓ≡ UIPhack) ▼)) (subExt id q)
 
 
 -- External version
 UIP : ∀{Γ} → (A : Ty Γ 1) → (a b : Tm Γ A) → (p q : Tm Γ (Idᶠ A a b)) → (Tm Γ (Idᶠ (Idᶠ A a b) p q))
-UIP {Γ} A a b p q = •-ind {Γ} {0} {(Idᶠ A a b)}
-                        (Idᶠ (Idᶠ (◀ A) (◁ a) (◁ b)) (coe ? (◁ p)) (coe (TmΓ≡ ?) ▼))
-                        -- (Idᶠ (Idᶠ (◀ A) {!!} {!!}) {!!} (coe (TmΓ≡ {!UIPhack!}) ▼))
-                        p
-                        -- (reflᶠ {A = Idᶠ A a b} {a = p})
-                        q
+UIP {Γ} A a b p q = coe (TmΓ≡ (UIPhack2 ⁻¹)) (•-ind {A = Idᶠ A a b}
+                          (Idᶠ (Idᶠ (◀ A) (◁ a) (◁ b)) (coe (TmΓ≡ UIPhack) (◁ p)) (coe (TmΓ≡ UIPhack) ▼))
+                          p
+                          (coe (TmΓ≡ UIPhack2) (reflᶠ {A = Idᶠ A a b} {a = p}))
+                          q)
+
+
+-- •-ind {Γ} {0} {(Idᶠ A a b)}
+--                         (Idᶠ (Idᶠ (◀ A) (◁ a) (◁ b)) (coe ? (◁ p)) (coe (TmΓ≡ ?) ▼)) -- (Idᶠ (Idᶠ (◀ A) {!!} {!!}) {!!} (coe (TmΓ≡ {!UIPhack!}) ▼))
+--                         ? -- p
+--                         ? -- (reflᶠ {A = Idᶠ A a b} {a = p})
+--                         ? -- q
 
 
 -- Internal version
@@ -48,5 +51,4 @@ UIP {Γ} A a b p q = •-ind {Γ} {0} {(Idᶠ A a b)}
 --                    (Idᶠ (◀ (◀ A)) (◁ ▼) ▼),
 --                    (Idᶠ (◀ (◀ (◀ A))) (◁ (◁ ▼)) (◁ ▼)))
 --                    (Idᶠ (Idᶠ (◀ (◀ (◀ (◀ A)))) (◁ (◁ (◁ ▼))) (◁ (◁ ▼))) (◁ ▼) ▼))
-UIP = {!!}
 -- UIP' = {!!}

@@ -10,7 +10,6 @@ open import FTT.Eliminators public
 open import FTT.Computation public
 
 
-
 -- Syntactic sugar
 
 <_> : {Γ : Cxt} {n : ℕ} {A : Ty Γ n} → Tm Γ A → Tms Γ (Γ , A)
@@ -19,23 +18,28 @@ open import FTT.Computation public
 _$_ : ∀{Γ l m n} {A : Ty Γ m} {B : Ty (Γ , A) n} → Tm Γ (Πᶠ l A B) → (u : Tm Γ A) → Tm Γ (subT B < u >)
 t $ u = subt (appᶠ t) < u >
 
-
 Πᶠc : {Γ : Cxt} {m n : ℕ} → (l : ℕ) → (A : Ty Γ m) → (B : Ty Γ n) → Ty Γ l
 Πᶠc {Γ} {m} {n} l A B = Πᶠ l A (vsT B)
 
-
--- non-dependent product (weird syntax since we have level parameter...()
 Σᶠc : {Γ : Cxt} {m n : ℕ} → (l : ℕ) → (A : Ty Γ m) → (B : Ty Γ n) → Ty Γ l
 Σᶠc {Γ} {m} {n} l A B = Σᶠ l A (vsT B)
 
 
-pred : ∀{Γ} → Tm Γ ℕᶠ → Tm Γ ℕᶠ
-pred x = ℕ-ind ℕᶠ zeroᶠ ▼ x
+
+𝓤ⁿ:𝓤ⁿ⁺¹ : ∀{Γ} → (n : ℕ) → Tm Γ (𝓤 (suc𝔻 n))
+𝓤ⁿ:𝓤ⁿ⁺¹ {Γ} n = enc (𝓤 n)
 
 -- Identity types
 
--- sym : ∀{Γ n} {A : Ty Γ n} {a b : Tm Γ A} → (Tm Γ (Idᶠ A a b)) → (Tm Γ (Idᶠ A b a))
--- sym {Γ} {n} {A} {a} {b} x = {!Id-ind!}
+-- sym : ∀{Γ n} {A : Ty Γ n} {a b : Tm Γ A} → (Tm Γ (Idᶠ A a b)) → Tm Γ (Idᶠ A b a)
+-- sym {Γ} {n} {A} {a} {b} p = coe {!!} (Id-ind {C = Idᶠ (◀ (◀ (◀ A))) (◁ ▼) (◁ (◁ ▼))} (coe {!!} (reflᶠ {a = ▼})) a b p)
+
+-- sym : ∀{Γ n} {A : Ty Γ n} {a b : Tm Γ A} → Tm (Γ , (Idᶠ A a b )) (Idᶠ (◀ A) (◁ b) (◁ a))
+-- sym {Γ} {n} {A} {a} {b} = Id-ind {C = Idᶠ (◀ (◀ (◀ (◀ A)))) (◁ ▼) {!!}} {!!} {!!} {!!} ▼
+
+-- sym : ∀{Γ n} {A : Ty Γ n} → Tm (Γ , A , ◀ A , (Idᶠ (◀ (◀ A)) (◁ ▼) ▼ )) (Idᶠ (◀ (◀ (◀ A))) (◁ ▼) (◁ (◁ ▼)))
+-- sym {Γ} {n} {A} = Id-ind {C = Idᶠ (◀ (◀ (◀ (◀ (◀ {!!}))))) {!!} {!!}} {!!} {!!} {!!} {!!}
+
 
 -- TODO trans
 

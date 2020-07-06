@@ -17,17 +17,15 @@ open import FTT.Lemmas
 
 
 -- Elimination principles
--- postulate
-
---   Id-ind : ∀ {Γ n}
---     → (A : Ty Γ n)
---     → (C : Ty (Γ , A , subT A wk , Idᶠ (◀ (◀ A)) (◁ ▼) ▼) n)
---     → (c : Tm (Γ , A) (subT C (subExt (subExt (subExt wk ▼) ▼) reflᶠ)))
---     → (a b : Tm Γ A)
---     → (p : Tm Γ (Idᶠ A a b))
---     ---------------------------------------------------------
---     → Tm Γ (subT C (subExt (subExt (subExt id a) b) (coe (TmΓ≡ IdHack) p)))
-
+postulate
+  Id-ind : ∀ {Γ m n}
+    → {A : Ty Γ m}
+    → {C : Ty (Γ , A , subT A wk , Idᶠ (◀ (◀ A)) (◁ ▼) ▼) n}
+    → (c : Tm (Γ , A) (subT C (subExt (subExt (subExt wk ▼) ▼) reflᶠ)))
+    → (a b : Tm Γ A)
+    → (p : Tm Γ (Idᶠ A a b))
+    ---------------------------------------------------------
+    → Tm Γ (subT C (subExt (subExt (subExt id a) (coe (TmΓ≡ IdHackLemma) b)) (coe (TmΓ≡ IdHack) p)))
 
   -- Σ-ind : ∀ {Γ n l i j}
   --   → {A : Ty Γ i}
