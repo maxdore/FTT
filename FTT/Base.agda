@@ -25,11 +25,12 @@ t $ u = subt (appᶠ t) < u >
 Σᶠc {Γ} {m} {n} l A B = Σᶠ l A (vsT B)
 
 
-
+-- 𝓤ⁿ has dimension n+1
 𝓤ⁿ:𝓤ⁿ⁺¹ : ∀{Γ} → (n : ℕ) → Tm Γ (𝓤 (suc𝔻 n))
 𝓤ⁿ:𝓤ⁿ⁺¹ {Γ} n = enc (𝓤 n)
 
--- Identity types
+
+-- Basic properties of identity types. These follow as usual from J.
 
 -- sym : ∀{Γ n} {A : Ty Γ n} {a b : Tm Γ A} → (Tm Γ (Idᶠ A a b)) → Tm Γ (Idᶠ A b a)
 -- sym {Γ} {n} {A} {a} {b} p = coe {!!} (Id-ind {C = Idᶠ (◀ (◀ (◀ A))) (◁ ▼) (◁ (◁ ▼))} (coe {!!} (reflᶠ {a = ▼})) a b p)
@@ -40,20 +41,8 @@ t $ u = subt (appᶠ t) < u >
 -- sym : ∀{Γ n} {A : Ty Γ n} → Tm (Γ , A , ◀ A , (Idᶠ (◀ (◀ A)) (◁ ▼) ▼ )) (Idᶠ (◀ (◀ (◀ A))) (◁ ▼) (◁ (◁ ▼)))
 -- sym {Γ} {n} {A} = Id-ind {C = Idᶠ (◀ (◀ (◀ (◀ (◀ {!!}))))) {!!} {!!}} {!!} {!!} {!!} {!!}
 
-
 -- TODO trans
 
 postulate
   subst : ∀{Γ m n} {A : Ty Γ m} {x y : Tm Γ A}
     → (B : Ty (Γ , A) n) → (p : Tm Γ (Idᶠ A x y)) → Tm Γ (subT B (subExt id x)) → Tm Γ (subT B (subExt id y))
--- subst B p x = {!!}
-
--- TODO ap (x = y implies fx = fy)
-
--- appf : ∀{Γ l m n} {A : Ty Γ m} {B : Ty Γ n} → Tm Γ (Πᶠc {Γ} {m} {n} l A B) → Tm Γ A → Tm Γ B
--- appf f a = f $ a
-
--- https://math.stackexchange.com/a/673003/470161
--- Σ : ∀{Γ i j} → (l : ℕ) → (A : Ty Γ i) → (B : Ty (Γ , A) j) → {!!}
--- Σ {Γ} {i} {j} l A B = {k : ℕ} → (C : Ty Γ k) → (x : Tm Γ A) → {!!}
-

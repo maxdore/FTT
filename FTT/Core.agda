@@ -4,16 +4,9 @@ module FTT.Core where
 
 open import FTT.Prelude
 
-
-_≡[_]≡_ : ∀{ℓ}{A B : Set ℓ} → A → A ≡ B → B → Set ℓ
-x ≡[ α ]≡ y = coe α x ≡ y
-
-infix 4 _≡[_]≡_
-
 𝔻 = ℕ
 pred𝔻 = predℕ
 suc𝔻 = suc
--- 𝕃 = 𝔻
 
 data Cxt : Set
 data Ty : Cxt → 𝔻 → Set
@@ -34,12 +27,10 @@ data Ty where
   Πᶠ : ∀{Γ m n} → (l : 𝔻) → (A : Ty Γ m) → (B : (Ty (Γ , A) n)) → Ty Γ l
   Σᶠ : ∀{Γ m n} → (l : 𝔻) → (A : Ty Γ m) → (B : (Ty (Γ , A) n)) → Ty Γ l
   Idᶠ : {Γ : Cxt} {n : 𝔻} → (A : Ty Γ n) → (a b : Tm Γ A) → Ty Γ (pred𝔻 n)
-  -- Idᶠ : {Γ : Cxt} {n : 𝔻} → (A : Ty Γ n) → Ty (Γ , A , subT A wk) (pred𝔻 n)
   ℕᶠ : {Γ : Cxt} → Ty Γ 1
   Finᶠ : {Γ : Cxt} → Tm Γ ℕᶠ → Ty Γ 1
   cumT : ∀{Γ n} → Ty Γ n → Ty Γ (suc𝔻 n)
   𝓤 : ∀{Γ} → (n : 𝔻) → Ty Γ (suc𝔻 n)
-
 
 -- Substitutions
 data Tms where
@@ -50,7 +41,6 @@ data Tms where
   π₁ : {Γ Δ : Cxt} → {n : 𝔻} → {A : Ty Δ n} → Tms Γ (Δ , A) → Tms Γ Δ
 
 
--- infixr 40 bind
 _⇒_ : Cxt → Cxt → Set
 _⇒_ = Tms
 
@@ -64,7 +54,6 @@ postulate
 {-# REWRITE [][]T #-}
 
 _↑_  : {Γ Δ : Cxt} {n : 𝔻} → (δ : Tms Γ Δ)(A : Ty Δ n) → Tms (Γ , (subT A δ)) (Δ , A)
--- δ ↑ A = subExt (δ ∘ π₁ id) (coe (TmΓ≡ [][]T) (π₂ id))
 
 postulate
   𝓤[] : {Γ Δ : Cxt} {n : 𝔻} {δ : Tms Γ Δ} → subT (𝓤 n) δ ≡ 𝓤 n
@@ -92,9 +81,11 @@ data Tm where
   subt : {Γ Δ : Cxt} {n : 𝔻} {A : Ty Δ n} → Tm Δ A → (δ : Tms Γ Δ) → Tm Γ (subT A δ)
   π₂ : {Γ Δ : Cxt} {n : 𝔻} {A : Ty Δ n} → (δ : Tms Γ (Δ , A)) → Tm Γ (subT A (π₁ δ))
 
+  -- lift term in universe
   cumt : ∀{Γ n} {A : Ty Γ n} → Tm Γ A → Tm Γ (cumT A)
 
-  •-ind : ∀ {Γ n}
+  -- Axiom L
+  L : ∀ {Γ n}
     {A : Ty Γ 0}
     → (C : Ty (Γ , A) n)
     → (a : Tm Γ A)
@@ -151,13 +142,10 @@ data Tm where
   ℕ-ind : ∀ {Γ n}
     → (C : Ty (Γ , ℕᶠ) n)
     → (c₀ : Tm Γ (subT C (subExt id zeroᶠ)))
-    → (cₛ : Tm (Γ , ℕᶠ) (subT C (subExt (π₁ id) (sucᶠ vz)))) -- TODO C ALSO IN CONTEXT ACC. TO HOTT BOOK!
+    → (cₛ : Tm (Γ , ℕᶠ) (subT C (subExt (π₁ id) (sucᶠ vz))))
     → (n : Tm Γ ℕᶠ)
     ---------------------------------------------------------
     → Tm Γ (subT C (subExt id n))
-
-  -- Fin needs two recursors:
-  --  https://books.google.co.uk/books?id=tQFqCQAAQBAJ&pg=PA100&lpg=PA100&dq=finite+type+recursor&source=bl&ots=kcZEtnqjQf&sig=ACfU3U2j_8WUeTJHLMPmAfm5r6e6JFDyyA&hl=de&sa=X&ved=2ahUKEwj6pb2anZjqAhVFlFwKHR05AscQ6AEwAHoECCkQAQ#v=onepage&q=finite%20type%20recursor&f=false
 
 
 postulate
@@ -172,11 +160,9 @@ vz = π₂ id
 vs x = subt x wk
 vsT B = subT B wk
 
-
 ▼ = vz
 ◁ = vs
 ◀ = vsT
-
 
 Ty≡ : {Γ₀ Γ₁ : Cxt}{n : 𝔻 }(Γ₂ : Γ₀ ≡ Γ₁) → Ty Γ₀ n ≡ Ty Γ₁ n
 Ty≡ refl = refl
@@ -204,9 +190,9 @@ postulate
     π₁ {Γ} {Δ} {n} {A} (subExt δ t) ≡ δ
   πη  : {Γ Δ : Cxt} {n : 𝔻} {A : Ty Δ n} {δ : Tms Γ (Δ , A)} →
     subExt (π₁ δ) (π₂ δ) ≡ δ
-  -- TODO WHERE DID THIS COME FROM?
+  -- TODO
   -- π[]t  : {Γ Δ : Cxt} {n : 𝔻} {A : Ty Δ n} {δ : Tms Γ (Δ , A)} →
-  --   subt (π₂ δ) (π₁ id) ≡ subt {!subt!} id
+  --   subt (π₂ δ) (π₁ id) ≡ ?
   εη  : {Γ : Cxt} {ε' : Tms Γ ⟨⟩} → ε' ≡ ε
 
 {-# REWRITE idl #-}

@@ -42,3 +42,8 @@ refl ◾ refl = refl
 infixl 4 _◾_
 
 {-# BUILTIN REWRITE _≡_ #-}
+
+_≡[_]≡_ : ∀{ℓ}{A B : Set ℓ} → A → A ≡ B → B → Set ℓ
+x ≡[ α ]≡ y = coe α x ≡ y
+
+infix 4 _≡[_]≡_
