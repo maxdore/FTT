@@ -15,11 +15,11 @@ open import FTT.Computation public
 <_> : {Γ : Cxt} {n : ℕ} {A : Ty Γ n} → Tm Γ A → Tms Γ (Γ , A)
 < t > = subExt id t
 
-_$_ : ∀{Γ l m n} {A : Ty Γ m} {B : Ty (Γ , A) n} → Tm Γ (Πᶠ l A B) → (u : Tm Γ A) → Tm Γ (subT B < u >)
+_$_ : ∀{Γ m n} {A : Ty Γ m} {B : Ty (Γ , A) n} → Tm Γ (Πᶠ A B) → (u : Tm Γ A) → Tm Γ (subT B < u >)
 t $ u = subt (appᶠ t) < u >
 
-Πᶠc : {Γ : Cxt} {m n : ℕ} → (l : ℕ) → (A : Ty Γ m) → (B : Ty Γ n) → Ty Γ l
-Πᶠc {Γ} {m} {n} l A B = Πᶠ l A (vsT B)
+Πᶠc : {Γ : Cxt} {m n : ℕ} → (A : Ty Γ m) → (B : Ty Γ n) → Ty Γ (suc𝔻 m)
+Πᶠc {Γ} {m} {n} A B = Πᶠ A (vsT B)
 
 Σᶠc : {Γ : Cxt} {m n : ℕ} → (l : ℕ) → (A : Ty Γ m) → (B : Ty Γ n) → Ty Γ l
 Σᶠc {Γ} {m} {n} l A B = Σᶠ l A (vsT B)
