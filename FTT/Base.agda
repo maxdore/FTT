@@ -18,11 +18,11 @@ open import FTT.Computation public
 _$_ : ∀{Γ m n} {A : Ty Γ m} {B : Ty (Γ , A) n} → Tm Γ (Πᶠ A B) → (u : Tm Γ A) → Tm Γ (subT B < u >)
 t $ u = subt (appᶠ t) < u >
 
-Πᶠc : {Γ : Cxt} {m n : ℕ} → (A : Ty Γ m) → (B : Ty Γ n) → Ty Γ (suc𝔻 m)
+Πᶠc : {Γ : Cxt} {m n : ℕ} → (A : Ty Γ m) → (B : Ty Γ n) → Ty Γ n
 Πᶠc {Γ} {m} {n} A B = Πᶠ A (vsT B)
 
-Σᶠc : {Γ : Cxt} {m n : ℕ} → (l : ℕ) → (A : Ty Γ m) → (B : Ty Γ n) → Ty Γ l
-Σᶠc {Γ} {m} {n} l A B = Σᶠ l A (vsT B)
+Σᶠc : {Γ : Cxt} {m n : ℕ} (A : Ty Γ m) → (B : Ty Γ n) → Ty Γ (sup𝔻 m n)
+Σᶠc {Γ} {m} {n} A B = Σᶠ A (vsT B)
 
 
 -- 𝓤ⁿ has dimension n+1

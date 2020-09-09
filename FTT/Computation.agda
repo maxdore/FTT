@@ -106,21 +106,21 @@ postulate
     ---------------------------------------------------------
     → λᶠ (appᶠ f) ≡ f
 
-  Σβ₁ : ∀{Γ l m n}
+  Σβ₁ : ∀{Γ m n}
     {A : Ty Γ m}
     {B : Ty (Γ , A) n}
     {a : Tm Γ A}
     {b : Tm Γ (subT B (subExt id a))}
     ---------------------------------------------------------
-    → fst {Γ} {l} {m} {n} {A} {B} (pair a b) ≡ a
+    → fst {Γ} {m} {n} {A} {B} (pair a b) ≡ a
 
-  Σβ₂ : ∀{Γ l m n}
+  Σβ₂ : ∀{Γ m n}
     {A : Ty Γ m}
     {B : Ty (Γ , A) n}
     {a : Tm Γ A}
     {b : Tm Γ (subT B (subExt id a))}
     ---------------------------------------------------------
-    → snd {Γ} {l} {m} {n} {A} {B} (pair a b)
+    → snd {Γ} {m} {n} {A} {B} (pair a b)
       ≡ coe (TmΓ≡ (cong (subT B) (cong (subExt id) (Σβ₁ ⁻¹)))) b
 
   ⊤β : ∀{Γ n}

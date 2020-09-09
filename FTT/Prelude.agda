@@ -19,6 +19,11 @@ predℕ : ℕ → ℕ
 predℕ zero = zero
 predℕ (suc n) = n
 
+supℕ : ℕ → ℕ → ℕ
+supℕ zero n = n
+supℕ m zero = m
+supℕ (suc m) (suc n) = suc (supℕ m n)
+
 coe : ∀{ℓ}{A B : Set ℓ} → A ≡ B → A → B
 coe refl a = a
 

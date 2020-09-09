@@ -7,6 +7,7 @@ open import FTT.Prelude
 𝔻 = ℕ
 pred𝔻 = predℕ
 suc𝔻 = suc
+sup𝔻 = supℕ
 
 data Cxt : Set
 data Ty : Cxt → 𝔻 → Set
@@ -24,13 +25,16 @@ data Ty where
   subT : {Γ Δ : Cxt} {n : 𝔻} → Ty Δ n → Tms Γ Δ → Ty Γ n
   ⊥ᶠ : {Γ : Cxt} → Ty Γ 0
   ⊤ᶠ : {Γ : Cxt} → Ty Γ 0
-  Πᶠ : ∀{Γ m n} → (A : Ty Γ m) → (B : (Ty (Γ , A) n)) → Ty Γ (suc𝔻 m)
-  Σᶠ : ∀{Γ m n} → (l : 𝔻) → (A : Ty Γ m) → (B : (Ty (Γ , A) n)) → Ty Γ l
+  Πᶠ : ∀{Γ m n} → (A : Ty Γ m) → (B : (Ty (Γ , A) n)) → Ty Γ n
+  Σᶠ : ∀{Γ m n} → (A : Ty Γ m) → (B : (Ty (Γ , A) n)) → Ty Γ (sup𝔻 m n)
   Idᶠ : {Γ : Cxt} {n : 𝔻} → (A : Ty Γ n) → (a b : Tm Γ A) → Ty Γ (pred𝔻 n)
   ℕᶠ : {Γ : Cxt} → Ty Γ 1
   Finᶠ : {Γ : Cxt} → Tm Γ ℕᶠ → Ty Γ 1
   cumT : ∀{Γ n} → Ty Γ n → Ty Γ (suc𝔻 n)
   𝓤 : ∀{Γ} → (n : 𝔻) → Ty Γ (suc𝔻 n)
+  -- HITs
+  MSet : {Γ : Cxt} → Ty Γ 1 → Ty Γ 1
+
 
 -- Substitutions
 data Tms where
@@ -58,7 +62,7 @@ _↑_  : {Γ Δ : Cxt} {n : 𝔻} → (δ : Tms Γ Δ)(A : Ty Δ n) → Tms (Γ 
 postulate
   𝓤[] : {Γ Δ : Cxt} {n : 𝔻} {δ : Tms Γ Δ} → subT (𝓤 n) δ ≡ 𝓤 n
   Π[] : {Γ Δ : Cxt} {m n : 𝔻} {A : Ty Δ m} {B : Ty (Δ , A) n} {δ : Tms Γ Δ} → subT (Πᶠ A B) δ ≡ Πᶠ (subT A δ) (subT B (δ ↑ A))
-  Σ[] : ∀{Γ Δ l m n}{A : Ty Δ m} {B : Ty (Δ , A) n} {δ : Tms Γ Δ} → subT (Σᶠ l A B) δ ≡ Σᶠ l (subT A δ) (subT B (δ ↑ A))
+  Σ[] : ∀{Γ Δ m n}{A : Ty Δ m} {B : Ty (Δ , A) n} {δ : Tms Γ Δ} → subT (Σᶠ A B) δ ≡ Σᶠ (subT A δ) (subT B (δ ↑ A))
   ⊤[] : ∀{Γ Δ} {δ : Γ ⇒ Δ} → subT ⊤ᶠ δ ≡ ⊤ᶠ
   ℕ[] : {Γ Δ : Cxt} {δ : Tms Γ Δ} → subT ℕᶠ δ ≡ ℕᶠ
 
@@ -108,25 +112,25 @@ data Tm where
     ---------------------------------------------------------
     → Tm (Γ , A) B
 
-  pair  : ∀{Γ l m n}
+  pair  : ∀{Γ m n}
       {A : Ty Γ m}
       {B : Ty (Γ , A) n}
     → (a : Tm Γ A)
     → Tm Γ (subT B (subExt id a))
     ---------------------------------------------------------
-    → Tm Γ (Σᶠ l A B)
+    → Tm Γ (Σᶠ A B)
 
-  fst : ∀ {Γ l m n}
+  fst : ∀ {Γ m n}
     {A : Ty Γ m}
     {B : (Ty (Γ , A) n)}
-    → Tm Γ (Σᶠ l A B)
+    → Tm Γ (Σᶠ A B)
     ---------------------------------------------------------
     → Tm Γ A
 
-  snd : ∀{Γ l m n}
+  snd : ∀{Γ m n}
     {A : Ty Γ m}
     {B : (Ty (Γ , A) n)}
-    → (t : Tm Γ (Σᶠ l A B))
+    → (t : Tm Γ (Σᶠ A B))
     ---------------------------------------------------------
     → Tm Γ (subT B (subExt id (fst t)))
 
@@ -146,6 +150,18 @@ data Tm where
     → (n : Tm Γ ℕᶠ)
     ---------------------------------------------------------
     → Tm Γ (subT C (subExt id n))
+
+  -- HIT constructors
+  -- []ᵐ : {Γ : Cxt} {A : Ty Γ 1} → Tm Γ (MSet A)
+  -- ∷ᵐ : {Γ : Cxt} {A : Ty Γ 1} → Tm Γ A → Tm Γ (MSet A) → Tm Γ (MSet A)
+  -- commᵐ : {Γ : Cxt} {A : Ty Γ 1} → (x : Tm Γ A) → (y : Tm Γ A) → (xs : Tm Γ (MSet A)) → Tm Γ (Idᶠ (MSet A) (∷ᵐ x (∷ᵐ y xs)) (∷ᵐ y (∷ᵐ x xs)))
+  -- MSet-ind : ∀ {Γ n} {A : Ty Γ 1}
+  --   → (C : Ty (Γ , MSet A) n)
+  --   → (e : Tm Γ (subT C (subExt id []ᵐ)))
+  --   → (cₛ : Tm (Γ , A , vsT (MSet A)) (subT C (subExt (π₁ (π₁ id)) (∷ᵐ ? ?))))
+  --   → (a : Tm Γ (MSet A))
+  --   ---------------------------------------------------------
+  --   → Tm Γ {!!}
 
 
 postulate
